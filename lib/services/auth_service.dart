@@ -1,0 +1,36 @@
+import 'package:shared_preferences/shared_preferences.dart';
+import '../utils/constants.dart';
+
+class AuthService {
+  Future<void> saveAccessToken(String token) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(AppConstants.accessTokenKey, token);
+  }
+
+  Future<void> saveRefreshToken(String token) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(AppConstants.refreshTokenKey, token);
+  }
+
+  Future<String?> getAccessToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(AppConstants.accessTokenKey);
+  }
+
+  Future<String?> getRefreshToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(AppConstants.refreshTokenKey);
+  }
+
+  Future<void> logout() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(AppConstants.accessTokenKey);
+    await prefs.remove(AppConstants.refreshTokenKey);
+  }
+
+  Future<bool> isAccessTokenValid() async {
+    final token = await getAccessToken();
+    if (token == null) return false;
+    return true;
+  }
+}
