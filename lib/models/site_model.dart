@@ -18,7 +18,7 @@ class SiteModel {
       this.hitPointList});
 
   factory SiteModel.fromJson(Map<String, dynamic> json) {
-    var hitPointListFromJson = json['hitPointList'] as List<dynamic>?;
+    var hitPointListFromJson = json['hitPointsList'] as List<dynamic>?;
     List<HitPointModel>? hitPoints = hitPointListFromJson != null
         ? hitPointListFromJson
             .map((item) => HitPointModel.fromJson(item))

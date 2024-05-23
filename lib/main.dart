@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:guard_client/ui/screens/chat/chat_screen.dart';
+import 'package:guard_client/ui/screens/sites/map_screen.dart';
 import 'services/auth_service.dart';
 import 'ui/screens/auth/login_screen.dart';
 import 'blocs/auth/auth_bloc.dart';
@@ -69,7 +71,7 @@ class MyApp extends StatelessWidget {
         title: 'Guard Client',
         theme: AppThemeData.defaultTheme,
         navigatorObservers: <NavigatorObserver>[routeObserver],
-        home: HomeScreen(),
+        home: SiteMapScreen(),
         routes: {
           '/login': (context) => LoginScreen(),
           '/signup': (context) => SignUpScreen(),
