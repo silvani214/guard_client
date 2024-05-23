@@ -1,0 +1,49 @@
+{
+  "project_info": {
+    "project_number": "536701431820",
+    "firebase_url": "https://guardstudio-f3127-default-rtdb.firebaseio.com",
+    "project_id": "guardstudio-f3127",
+    "storage_bucket": "guardstudio-f3127.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:536701431820:android:8ad537314139c2174b7e29",
+        "android_client_info": {
+          "package_name": "com.example.flutter_guard"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA4o29vXWRrPAF8PHdrulfPFwRydtmifyA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:536701431820:android:21a384f003ed3a4c4b7e29",
+        "android_client_info": {
+          "package_name": "com.example.guard_client"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA4o29vXWRrPAF8PHdrulfPFwRydtmifyA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -12,12 +12,19 @@ import 'services/site_service.dart';
 import 'blocs/site/site_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:logger/logger.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'ui/screens/sitemap/map.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'firebase_options.dart';
 
 final Logger logger = Logger();
 
-void main() {
+void main() async {
   Logger.level = Level.debug;
   setup();
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(MyApp());
 }
 
@@ -61,7 +68,7 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
-        home: AuthHandler(),
+        home: MapScreen(),
         routes: {
           '/login': (context) => LoginScreen(),
           '/signup': (context) => SignUpScreen(),
