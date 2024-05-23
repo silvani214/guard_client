@@ -15,6 +15,15 @@ class SiteService {
     }
   }
 
+  Future<SiteModel> getSite(int id) async {
+    try {
+      return await siteRepository.getSite(id);
+    } catch (e) {
+      // Handle errors appropriately in your app
+      rethrow;
+    }
+  }
+
   Future<void> addSite(SiteModel site) async {
     try {
       await siteRepository.createSite(site);

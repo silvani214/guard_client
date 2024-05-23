@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../blocs/auth/auth_bloc.dart';
 import '../../widgets/auth_text_field.dart';
+import '../../widgets/auth_password_field.dart';
 
 class LoginScreen extends StatelessWidget {
   final TextEditingController userNameController = TextEditingController();
@@ -9,10 +10,9 @@ class LoginScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double screenHeight = MediaQuery.of(context).size.height;
+
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Login'),
-      ),
       body: BlocConsumer<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is AuthSuccess) {
@@ -29,20 +29,28 @@ class LoginScreen extends StatelessWidget {
           }
           return Padding(
             padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
+            child: ListView(
               children: [
+                SizedBox(height: screenHeight * .08),
+                Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                  Image.asset(
+                    'assets/logo.jpg',
+                    height: 60, // Adjust the height as needed
+                  )
+                ]),
+                SizedBox(height: screenHeight * .08),
                 AuthTextField(
                   controller: userNameController,
-                  label: 'User Name',
+                  label: 'Email',
+                  icon: Icons.person,
                 ),
                 SizedBox(height: 16),
-                AuthTextField(
+                AuthPasswordField(
                   controller: passwordController,
                   label: 'Password',
-                  isPassword: true,
+                  icon: Icons.lock,
                 ),
-                SizedBox(height: 16),
+                SizedBox(height: 24),
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
@@ -56,12 +64,6 @@ class LoginScreen extends StatelessWidget {
                     },
                     child: Text('Login'),
                   ),
-                ),
-                TextButton(
-                  onPressed: () {
-                    Navigator.pushNamed(context, '/signup');
-                  },
-                  child: Text('Sign Up'),
                 ),
               ],
             ),

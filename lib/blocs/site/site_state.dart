@@ -4,20 +4,31 @@ abstract class SiteState extends Equatable {
   const SiteState();
 
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }
 
 class SiteInitial extends SiteState {}
 
 class SiteLoading extends SiteState {}
 
-class SiteLoaded extends SiteState {
+class SiteListLoaded extends SiteState {
   final List<SiteModel> sites;
 
-  SiteLoaded({required this.sites});
+  SiteListLoaded({required this.sites});
 
   @override
-  List<Object> get props => [sites];
+  List<Object?> get props => [sites];
+}
+
+class SiteDetailLoading extends SiteState {}
+
+class SiteDetailLoaded extends SiteState {
+  final SiteModel site;
+
+  SiteDetailLoaded({required this.site});
+
+  @override
+  List<Object?> get props => [site];
 }
 
 class SiteError extends SiteState {
@@ -26,5 +37,5 @@ class SiteError extends SiteState {
   SiteError({required this.message});
 
   @override
-  List<Object> get props => [message];
+  List<Object?> get props => [message];
 }

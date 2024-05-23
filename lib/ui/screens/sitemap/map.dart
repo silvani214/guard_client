@@ -1,34 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:guard_client/blocs/site/site_bloc.dart';
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
-  runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
+class SiteMapScreen extends StatefulWidget {
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Firebase Map',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: MapScreen(),
-    );
-  }
+  _SiteMapScreenState createState() => _SiteMapScreenState();
 }
 
-class MapScreen extends StatefulWidget {
-  @override
-  _MapScreenState createState() => _MapScreenState();
-}
-
-class _MapScreenState extends State<MapScreen> {
+class _SiteMapScreenState extends State<SiteMapScreen> {
   final DatabaseReference _databaseReference =
       FirebaseDatabase.instance.reference().child('locations');
   late GoogleMapController _mapController;
@@ -41,6 +24,7 @@ class _MapScreenState extends State<MapScreen> {
     super.initState();
     _initialPosition = LatLng(45.427675000001365, -108.40590330000137);
     _signInAndFetchLocation();
+    context.read<SiteBloc>().add(GetSite(id: 2));
   }
 
   Future<void> _signInAndFetchLocation() async {

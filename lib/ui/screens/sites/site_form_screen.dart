@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'map_screen.dart';
+import '../sitemap/map.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../../../blocs/site/site_bloc.dart';
 import '../../../models/site_model.dart';
 import '../../../models/location_model.dart';
 import '../../widgets/form_text_field.dart';
+import 'map_screen.dart';
 
 class SiteFormScreen extends StatelessWidget {
   final bool isEditMode;
@@ -17,7 +18,7 @@ class SiteFormScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(isEditMode ? 'Edit Site' : 'Create Site'),
+        title: Text(isEditMode ? 'Site' : 'Create Site'),
         actions: this.isEditMode
             ? [
                 IconButton(
@@ -26,7 +27,14 @@ class SiteFormScreen extends StatelessWidget {
                 ),
                 IconButton(
                   icon: Icon(Icons.map),
-                  onPressed: null,
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => SiteMapScreen(),
+                      ),
+                    );
+                  },
                 ),
               ]
             : [],
@@ -56,6 +64,7 @@ class _SiteFormState extends State<SiteForm> {
   final _formKey = GlobalKey<FormState>();
   late String _name;
   late String _description;
+  late String? _address;
   String _location = 'Select Location';
   LocationModel? _selectedLocation;
 
@@ -65,8 +74,11 @@ class _SiteFormState extends State<SiteForm> {
     if (widget.isEditMode && widget.site != null) {
       _name = widget.site!.name;
       _description = widget.site!.description;
-      _location =
-          '${widget.site!.location.latitude}, ${widget.site!.location.longitude}';
+      _address = widget.site!.address;
+      _location = widget.isEditMode
+          ? (_address ??
+              '${widget.site!.location.latitude}\n${widget.site!.location.longitude}')
+          : '${widget.site!.location.latitude}\n${widget.site!.location.longitude}';
       _selectedLocation = widget.site!.location;
     } else {
       _name = '';
@@ -85,8 +97,10 @@ class _SiteFormState extends State<SiteForm> {
           latitude: selectedLocation.latitude,
           longitude: selectedLocation.longitude,
         );
-        _location =
-            '${selectedLocation.latitude}\n${selectedLocation.longitude}';
+        _location = widget.isEditMode
+            ? (_address ??
+                '${selectedLocation.latitude}\n${selectedLocation.longitude}')
+            : '${selectedLocation.latitude}\n${selectedLocation.longitude}';
       });
     }
   }

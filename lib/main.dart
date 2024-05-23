@@ -17,6 +17,8 @@ import 'ui/screens/sitemap/map.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'firebase_options.dart';
+import 'utils/app_theme.dart';
+import 'utils/route_observer.dart';
 
 final Logger logger = Logger();
 
@@ -65,10 +67,9 @@ class MyApp extends StatelessWidget {
       ],
       child: MaterialApp(
         title: 'Guard Client',
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
-        ),
-        home: MapScreen(),
+        theme: AppThemeData.defaultTheme,
+        navigatorObservers: <NavigatorObserver>[routeObserver],
+        home: HomeScreen(),
         routes: {
           '/login': (context) => LoginScreen(),
           '/signup': (context) => SignUpScreen(),

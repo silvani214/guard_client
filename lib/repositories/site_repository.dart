@@ -1,5 +1,6 @@
 import '../models/site_model.dart';
 import '../services/api_client.dart';
+import 'dart:convert';
 
 class SiteRepository {
   final ApiClient apiClient;
@@ -8,11 +9,22 @@ class SiteRepository {
 
   Future<List<SiteModel>> fetchSites() async {
     final response = await apiClient.get('/sites/client/102');
-    print(response);
     List<SiteModel> sites = (response.data as List)
         .map((site) => SiteModel.fromJson(site))
         .toList();
     return sites;
+  }
+
+  Future<SiteModel> getSite(int id) async {
+    final response = await apiClient.get('/sites/$id');
+    Map<String, dynamic> originalMap = response.data;
+    final Map<String, dynamic> data = {
+      ...originalMap['site'],
+      'hitPointsList': originalMap['hitPointsList']
+    };
+    SiteModel site = SiteModel.fromJson(data);
+
+    return site;
   }
 
   Future<void> createSite(SiteModel site) async {
