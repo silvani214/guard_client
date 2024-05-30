@@ -18,8 +18,8 @@ class UserModel {
       id: json['id'],
       email: json['email'],
       password: json['password'],
-      firstName: json['first_name'],
-      lastName: json['last_name'],
+      firstName: json['firstname'],
+      lastName: json['lastname'],
     );
   }
 

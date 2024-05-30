@@ -5,11 +5,13 @@ class AuthTextField extends StatelessWidget {
   final String label;
   final bool isPassword;
   final IconData icon;
+  late String hintText;
 
   AuthTextField({
     required this.controller,
     required this.label,
     this.isPassword = false,
+    this.hintText = "",
     required this.icon,
   });
 
@@ -25,6 +27,14 @@ class AuthTextField extends StatelessWidget {
         controller: controller,
         obscureText: isPassword,
         decoration: InputDecoration(
+          hintText: hintText,
+          hintStyle: TextStyle(
+            // Style for the placeholder text
+            color: Colors.grey,
+            fontSize: 16.0,
+            fontWeight: FontWeight.normal,
+            fontStyle: FontStyle.italic,
+          ),
           border: OutlineInputBorder(),
           prefixIcon: Icon(icon, color: Colors.black26),
         ),

@@ -68,10 +68,11 @@ class MyApp extends StatelessWidget {
         ),
       ],
       child: MaterialApp(
+        debugShowCheckedModeBanner: false,
         title: 'Guard Client',
         theme: AppThemeData.defaultTheme,
         navigatorObservers: <NavigatorObserver>[routeObserver],
-        home: SiteMapScreen(),
+        home: AuthHandler(),
         routes: {
           '/login': (context) => LoginScreen(),
           '/signup': (context) => SignUpScreen(),
@@ -87,6 +88,9 @@ class AuthHandler extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (context, state) {
+        if (state is AuthSuccess) {
+          return HomeScreen();
+        }
         if (state is AuthChecked) {
           if (state.isAuthenticated) {
             return HomeScreen();

@@ -73,7 +73,7 @@ class _SiteFormState extends State<SiteForm> {
     super.initState();
     if (widget.isEditMode && widget.site != null) {
       _name = widget.site!.name;
-      _description = widget.site!.description;
+      _description = widget.site!.description!;
       _address = widget.site!.address;
       _location = widget.isEditMode
           ? (_address ??

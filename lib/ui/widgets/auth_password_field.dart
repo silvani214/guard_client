@@ -4,12 +4,13 @@ class AuthPasswordField extends StatefulWidget {
   final TextEditingController controller;
   final String label;
   final IconData icon;
+  late String hintText;
 
-  AuthPasswordField({
-    required this.controller,
-    required this.label,
-    required this.icon,
-  });
+  AuthPasswordField(
+      {required this.controller,
+      required this.label,
+      required this.icon,
+      this.hintText = ""});
 
   @override
   _AuthPasswordFieldState createState() => _AuthPasswordFieldState();
@@ -37,6 +38,14 @@ class _AuthPasswordFieldState extends State<AuthPasswordField> {
         obscureText: _obscureText,
         decoration: InputDecoration(
           border: OutlineInputBorder(),
+          hintText: widget.hintText,
+          hintStyle: TextStyle(
+            // Style for the placeholder text
+            color: Colors.grey,
+            fontSize: 16.0,
+            fontWeight: FontWeight.normal,
+            fontStyle: FontStyle.italic,
+          ),
           prefixIcon: Icon(widget.icon, color: Colors.black26),
           suffixIcon: IconButton(
             icon: Icon(_obscureText ? Icons.visibility : Icons.visibility_off,

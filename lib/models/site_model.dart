@@ -4,7 +4,7 @@ import 'hit_point_model.dart';
 class SiteModel {
   final int id;
   final String name;
-  final String description;
+  final String? description;
   final LocationModel location;
   late List<HitPointModel>? hitPointList = [];
   late String? address = "";
@@ -31,8 +31,8 @@ class SiteModel {
         description: '',
         address: json['address'],
         location: LocationModel(
-          latitude: json['x'],
-          longitude: json['y'],
+          latitude: json['lat'],
+          longitude: json['lng'],
         ),
         hitPointList: hitPoints);
   }

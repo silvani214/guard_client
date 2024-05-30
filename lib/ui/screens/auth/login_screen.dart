@@ -25,7 +25,9 @@ class LoginScreen extends StatelessWidget {
         },
         builder: (context, state) {
           if (state is AuthLoading) {
-            return Center(child: CircularProgressIndicator());
+            return SizedBox(
+              width: 10,
+            );
           }
           return Padding(
             padding: const EdgeInsets.all(16.0),
@@ -43,12 +45,14 @@ class LoginScreen extends StatelessWidget {
                   controller: userNameController,
                   label: 'Email',
                   icon: Icons.person,
+                  hintText: 'client@guard.com',
                 ),
                 SizedBox(height: 16),
                 AuthPasswordField(
                   controller: passwordController,
                   label: 'Password',
                   icon: Icons.lock,
+                  hintText: 'Input the Password',
                 ),
                 SizedBox(height: 24),
                 SizedBox(

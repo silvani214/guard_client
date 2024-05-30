@@ -46,20 +46,6 @@ class _SiteScreenState extends State<SiteScreen> with RouteAware {
               context.read<SiteBloc>().add(RefreshSites());
             },
           ),
-          IconButton(
-            icon: Icon(Icons.add),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => SiteFormScreen(isEditMode: false),
-                ),
-              ).then((_) {
-                // Refresh the list when coming back from the form screen
-                context.read<SiteBloc>().add(FetchSites());
-              });
-            },
-          ),
         ],
       ),
       body: BlocBuilder<SiteBloc, SiteState>(

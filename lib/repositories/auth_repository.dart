@@ -10,7 +10,7 @@ class AuthRepository {
   Future<UserModel?> login(String email, String password) async {
     try {
       final response = await apiClient.post(AppConstants.loginEndpoint, data: {
-        'username': email,
+        'email': email,
         'password': password,
       });
 
@@ -18,6 +18,8 @@ class AuthRepository {
         final data = response.data['data'];
         await apiClient.authService.saveAccessToken(data['access_token']);
         await apiClient.authService.saveRefreshToken(data['refresh_token']);
+        await apiClient.authService
+            .saveUserDetail(UserModel.fromJson(data['client']));
         return UserModel.fromJson(data['client']);
       } else {
         return null;
@@ -47,7 +49,9 @@ class AuthRepository {
     try {
       final response = await apiClient.post(AppConstants.meEndpoint);
       if (response.statusCode == 200) {
-        return UserModel.fromJson(response.data);
+        final data = response.data['data'];
+        await apiClient.authService.saveUserDetail(UserModel.fromJson(data));
+        return UserModel.fromJson(data);
       } else {
         return null;
       }

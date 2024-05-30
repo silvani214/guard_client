@@ -6,12 +6,12 @@ import 'package:firebase_database/firebase_database.dart';
 import 'dart:convert';
 import 'package:uuid/uuid.dart';
 
-class ChatScreen extends StatefulWidget {
+class ChatRoom extends StatefulWidget {
   @override
-  _ChatScreenState createState() => _ChatScreenState();
+  _ChatRoomState createState() => _ChatRoomState();
 }
 
-class _ChatScreenState extends State<ChatScreen> {
+class _ChatRoomState extends State<ChatRoom> {
   final me = 'client@test.com';
   final target = 'sunnyskai.fellow@gmail.com';
 

@@ -22,6 +22,7 @@ class _SiteMapScreenState extends State<SiteMapScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   final Completer<void> _signInCompleter = Completer<void>();
+  final Completer<void> _mapControllerCompleter = Completer<void>();
 
   @override
   void initState() {
@@ -52,11 +53,11 @@ class _SiteMapScreenState extends State<SiteMapScreen> {
     _databaseReference.onValue.listen((event) {
       var snapshot = event.snapshot;
       if (snapshot.exists) {
-        var data = snapshot.value as Map;
-        var email = data['email'];
-        var latitude = data['latitude'];
-        var longitude = data['longitude'];
-        if (email == 'john.tester@gmail.com') {
+        var data = snapshot.value! as List;
+        var email = data[1]['email'];
+        var latitude = data[1]['latitude'];
+        var longitude = data[1]['longitude'];
+        if (email == 'guard@test.com') {
           setState(() {
             _markers.add(
               Marker(
@@ -76,8 +77,11 @@ class _SiteMapScreenState extends State<SiteMapScreen> {
       _signInCompleter.future,
       BlocProvider.of<SiteBloc>(context)
           .stream
-          .firstWhere((state) => state is SiteDetailLoaded)
-    ]).then((_) {
+          .firstWhere((state) => state is SiteDetailLoaded),
+      _mapControllerCompleter.future,
+    ]).then((results) {
+      final siteState = results[1] as SiteDetailLoaded;
+      _centerMapAndAddHitPoints(siteState);
       _fetchLocation();
     }).catchError((error) {
       print('Error: $error');
@@ -156,14 +160,12 @@ class _SiteMapScreenState extends State<SiteMapScreen> {
     return BlocListener<SiteBloc, SiteState>(
       listener: (context, state) {
         if (state is SiteDetailLoaded) {
-          print(state.site);
-          print(state.site.hitPointList);
-          _centerMapAndAddHitPoints(state);
+          // _centerMapAndAddHitPoints(state);
         }
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text('Firebase Map'),
+          title: Text('Site Information'),
         ),
         body: GoogleMap(
           initialCameraPosition: CameraPosition(
@@ -174,6 +176,7 @@ class _SiteMapScreenState extends State<SiteMapScreen> {
           circles: _circles,
           onMapCreated: (GoogleMapController controller) {
             _mapController = controller;
+            _mapControllerCompleter.complete();
           },
         ),
       ),

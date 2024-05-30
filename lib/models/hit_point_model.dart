@@ -19,8 +19,8 @@ class HitPointModel {
       name: json['name'],
       siteId: json['siteId'],
       location: LocationModel(
-        latitude: json['x'],
-        longitude: json['y'],
+        latitude: json['lat'],
+        longitude: json['lng'],
       ),
     );
   }

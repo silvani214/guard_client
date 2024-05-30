@@ -4,9 +4,9 @@ import 'auth_service.dart';
 
 class ApiClient {
   final _dio = Dio(BaseOptions(
-    connectTimeout: Duration(seconds: 3),
-    receiveTimeout: Duration(seconds: 5),
-    sendTimeout: Duration(seconds: 3),
+    connectTimeout: Duration(seconds: 10),
+    receiveTimeout: Duration(seconds: 10),
+    sendTimeout: Duration(seconds: 10),
   ));
   final AuthService authService;
 
@@ -14,6 +14,7 @@ class ApiClient {
     _dio.interceptors.add(InterceptorsWrapper(
       onRequest: (options, handler) async {
         final accessToken = await authService.getAccessToken();
+        print(accessToken);
         if (accessToken != null) {
           options.headers['Authorization'] = 'Bearer $accessToken';
         }
