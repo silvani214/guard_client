@@ -5,6 +5,7 @@ import './sites/site_screen.dart';
 import './setting/setting_screen.dart';
 import './profile/profile_screen.dart';
 import './chat/chat_screen.dart';
+import './chat/chat_room.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -15,7 +16,6 @@ class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
   final List<Widget> _screens = [
     SiteScreen(),
-    ChatScreen(),
     SettingsScreen(),
     ProfileScreen(),
   ];
@@ -37,8 +37,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         child: BottomNavigationBar(
           items: [
-            BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-            BottomNavigationBarItem(icon: Icon(Icons.chat), label: 'Chat'),
+            BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Sites'),
             BottomNavigationBarItem(
                 icon: Icon(Icons.settings), label: 'Settings'),
             BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),

@@ -49,6 +49,8 @@ dependencies:
   uuid: ^4.4.0
   flutter_chat_ui: ^1.6.13
   flutter_chat_types: ^3.6.2
+  flutter_svg: ^2.0.10+1
+  gif_view: ^0.4.4
 
 dev_dependencies:
   flutter_test:
@@ -72,6 +74,8 @@ flutter:
   uses-material-design: true
   assets:
     - assets/logo.jpg
+    - assets/logo.png
+    - assets/spinner.gif
   # To add assets to your application, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg

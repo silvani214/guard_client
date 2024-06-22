@@ -16,7 +16,7 @@ class SiteRepository {
       final response = await apiClient.get('/sites/');
       print(response.data['data']);
       List<SiteModel> sites = (response.data['data'] as List)
-          .map((site) => SiteModel.fromJson(site))
+          .map((site) => SiteModel.fromJson(site['site']))
           .toList();
       return sites;
     } catch (e) {
@@ -33,7 +33,6 @@ class SiteRepository {
         'hitPointsList': originalMap['data']['hitPointsList']
       };
       SiteModel site = SiteModel.fromJson(data);
-
       return site;
     } catch (e) {
       throw Exception('Failed to get a site');

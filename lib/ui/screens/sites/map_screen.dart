@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class MapScreen extends StatefulWidget {
-  final LatLng initialLocation;
+  final LatLng location;
 
-  MapScreen({this.initialLocation = const LatLng(37.7749, -122.4194)});
+  MapScreen({this.location = const LatLng(37.7749, -122.4194)});
 
   @override
   _MapScreenState createState() => _MapScreenState();
@@ -16,7 +16,7 @@ class _MapScreenState extends State<MapScreen> {
   @override
   void initState() {
     super.initState();
-    _selectedLocation = widget.initialLocation;
+    _selectedLocation = widget.location;
   }
 
   void _onMapTap(LatLng position) {
@@ -34,12 +34,6 @@ class _MapScreenState extends State<MapScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Select Location'),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.check),
-            onPressed: _onConfirm,
-          ),
-        ],
       ),
       body: GoogleMap(
         initialCameraPosition: CameraPosition(

@@ -3,17 +3,27 @@ import 'package:flutter/material.dart';
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:firebase_database/firebase_database.dart';
+import 'package:guard_client/services/auth_service.dart';
 import 'dart:convert';
 import 'package:uuid/uuid.dart';
+import '../../../models/user_model.dart';
+import 'package:get_it/get_it.dart';
 
 class ChatScreen extends StatefulWidget {
+  final UserModel guard;
+
+  ChatScreen({
+    required this.guard,
+  });
+
   @override
   _ChatScreenState createState() => _ChatScreenState();
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-  final me = 'client@test.com';
-  final target = 'sunnyskai.fellow@gmail.com';
+  final getIt = GetIt.instance;
+  late UserModel me;
+  late UserModel target;
 
   final DatabaseReference _messagesRef =
       FirebaseDatabase.instance.reference().child('messages');
@@ -26,6 +36,15 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   void initState() {
     super.initState();
+
+    initializeAsync();
+  }
+
+  Future<void> initializeAsync() async {
+    target = widget.guard;
+    me = (await getIt<AuthService>().getUserDetail())!;
+    print(target.email);
+    print(me.email);
     _messagesRef.onChildAdded.listen(_onMessageAdded);
     _listenToOpponentTyping();
   }
@@ -41,30 +60,40 @@ class _ChatScreenState extends State<ChatScreen> {
 
   void _onMessageAdded(DatabaseEvent event) {
     final messageData = event.snapshot.value as Map<dynamic, dynamic>;
-    if ((messageData['to'] == me && messageData['from'] == target) ||
-        (messageData['to'] == target && messageData['from'] == me)) {
-      final message = types.TextMessage(
-        author: types.User(
-            id: messageData['from'], firstName: 'AAAA', lastName: "BBBB"),
-        createdAt:
-            DateTime.parse(messageData['timestamp']).millisecondsSinceEpoch,
-        id: event.snapshot.key!,
-        text: messageData['content'],
-      );
-
-      setState(() {
-        _messages.insert(0, message);
-      });
+    late var author;
+    if (messageData['to'] == me.email && messageData['from'] == target.email) {
+      // incoming
+      author = types.User(
+          id: target.email,
+          firstName: target.firstName,
+          lastName: target.lastName);
+    } else if (messageData['to'] == target.email &&
+        messageData['from'] == me.email) {
+      author = types.User(
+          id: me.email, firstName: me.firstName, lastName: me.lastName);
+    } else {
+      return;
     }
+    final message = types.TextMessage(
+      author: author,
+      createdAt:
+          DateTime.parse(messageData['timestamp']).millisecondsSinceEpoch,
+      id: event.snapshot.key!,
+      text: messageData['content'],
+    );
+
+    setState(() {
+      _messages.insert(0, message);
+    });
   }
 
   void _handleSendPressed(types.PartialText message) {
     final newMessage = {
       'content': message.text,
-      'from': me,
+      'from': me.email,
       'status': false,
       'timestamp': DateTime.now().toIso8601String(),
-      'to': target,
+      'to': target.email,
     };
 
     _messagesRef.push().set(newMessage);
@@ -72,7 +101,7 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   void _setTypingStatus(bool isTyping) {
-    _usersRef.child('Staff32').update({'email': target});
+    _usersRef.child('Staff32').update({'email': target.email});
   }
 
   void _handleTextChanged(String text) {
@@ -95,7 +124,12 @@ class _ChatScreenState extends State<ChatScreen> {
         user: _user,
         typingIndicatorOptions: TypingIndicatorOptions(
             typingUsers: _isOpponentTyping
-                ? [types.User(id: target, firstName: 'A', lastName: 'B')]
+                ? [
+                    types.User(
+                        id: target.email,
+                        firstName: target.firstName,
+                        lastName: target.lastName)
+                  ]
                 : []),
         theme: DefaultChatTheme(
             // INPUT TEXTFIELD THEME

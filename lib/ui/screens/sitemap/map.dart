@@ -8,6 +8,10 @@ import 'package:guard_client/blocs/site/site_bloc.dart';
 import 'dart:async';
 
 class SiteMapScreen extends StatefulWidget {
+  final int siteId;
+
+  SiteMapScreen({required this.siteId});
+
   @override
   _SiteMapScreenState createState() => _SiteMapScreenState();
 }
@@ -30,7 +34,7 @@ class _SiteMapScreenState extends State<SiteMapScreen> {
     _sitePosition =
         LatLng(45.427675000001365, -108.40590330000137); // Default position
     _signInAndFetchLocation();
-    context.read<SiteBloc>().add(GetSite(id: 2));
+    context.read<SiteBloc>().add(GetSite(id: widget.siteId));
     _runFunctionAfterBothComplete();
   }
 
@@ -41,6 +45,7 @@ class _SiteMapScreenState extends State<SiteMapScreen> {
         password: '123456',
       );
       if (userCredential.user != null) {
+        print('LOGIN LOGIN LOGIN LOGIN LOGIN');
         _signInCompleter.complete();
       }
     } catch (e) {
@@ -58,15 +63,15 @@ class _SiteMapScreenState extends State<SiteMapScreen> {
         var latitude = data[1]['latitude'];
         var longitude = data[1]['longitude'];
         if (email == 'guard@test.com') {
-          setState(() {
-            _markers.add(
-              Marker(
-                markerId: MarkerId(email),
-                position: LatLng(latitude, longitude),
-                infoWindow: InfoWindow(title: email),
-              ),
-            );
-          });
+          // setState(() {
+          //   _markers.add(
+          //     Marker(
+          //       markerId: MarkerId(email),
+          //       position: LatLng(latitude, longitude),
+          //       infoWindow: InfoWindow(title: email),
+          //     ),
+          //   );
+          // });
         }
       }
     });
@@ -80,6 +85,8 @@ class _SiteMapScreenState extends State<SiteMapScreen> {
           .firstWhere((state) => state is SiteDetailLoaded),
       _mapControllerCompleter.future,
     ]).then((results) {
+      print('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA');
+      print(results);
       final siteState = results[1] as SiteDetailLoaded;
       _centerMapAndAddHitPoints(siteState);
       _fetchLocation();
@@ -91,14 +98,6 @@ class _SiteMapScreenState extends State<SiteMapScreen> {
   void _centerMapAndAddHitPoints(SiteDetailLoaded state) {
     var site = state.site;
     LatLngBounds bounds;
-    List<LatLng> positions = [
-      LatLng(site.location.latitude, site.location.longitude)
-    ];
-
-    for (var hitPoint in site.hitPointList!) {
-      positions
-          .add(LatLng(hitPoint.location.latitude, hitPoint.location.longitude));
-    }
 
     setState(() {
       _sitePosition = LatLng(site.location.latitude, site.location.longitude);
@@ -120,19 +119,8 @@ class _SiteMapScreenState extends State<SiteMapScreen> {
           infoWindow: InfoWindow(title: site.name),
         ),
       );
-
-      for (var hitPoint in site.hitPointList!) {
-        _markers.add(
-          Marker(
-            markerId: MarkerId(hitPoint.name),
-            position:
-                LatLng(hitPoint.location.latitude, hitPoint.location.longitude),
-            infoWindow: InfoWindow(title: hitPoint.name),
-          ),
-        );
-      }
     });
-    bounds = _createBoundsFromLatLngList(positions);
+    bounds = _createBoundsFromLatLngList([_sitePosition]);
     _mapController.animateCamera(
       CameraUpdate.newLatLngBounds(
           bounds, 50), // Padding of 50 to keep site at center
@@ -161,6 +149,7 @@ class _SiteMapScreenState extends State<SiteMapScreen> {
       listener: (context, state) {
         if (state is SiteDetailLoaded) {
           // _centerMapAndAddHitPoints(state);
+          print("LOADED LOADED LOADED");
         }
       },
       child: Scaffold(

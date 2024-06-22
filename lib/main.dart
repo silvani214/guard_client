@@ -2,16 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:guard_client/ui/screens/chat/chat_screen.dart';
 import 'package:guard_client/ui/screens/sites/map_screen.dart';
+import 'package:guard_client/ui/screens/event/event_screen.dart';
 import 'services/auth_service.dart';
 import 'ui/screens/auth/login_screen.dart';
 import 'blocs/auth/auth_bloc.dart';
 import 'repositories/auth_repository.dart';
 import 'repositories/site_repository.dart';
+import 'repositories/guard_repository.dart';
+import 'repositories/event_repository.dart';
 import 'services/api_client.dart';
 import 'ui/screens/auth/signup_screen.dart';
 import 'ui/screens/home_screen.dart';
 import 'services/site_service.dart';
+import 'services/guard_service.dart';
+import 'services/event_service.dart';
 import 'blocs/site/site_bloc.dart';
+import 'blocs/guard/guard_bloc.dart';
+import 'blocs/event/event_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:logger/logger.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -21,6 +28,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'firebase_options.dart';
 import 'utils/app_theme.dart';
 import 'utils/route_observer.dart';
+import 'ui/screens/splash/splash_screen.dart';
 
 final Logger logger = Logger();
 
@@ -37,11 +45,24 @@ void setup() {
   getIt.registerSingleton<AuthService>(AuthService());
   getIt.registerSingleton<ApiClient>(
       ApiClient(authService: getIt<AuthService>()));
+
   getIt.registerSingleton<AuthRepository>(
       AuthRepository(apiClient: getIt<ApiClient>()));
   getIt.registerFactory(() => AuthBloc(
       authRepository: getIt<AuthRepository>(),
       authService: getIt<AuthService>()));
+
+  getIt.registerSingleton<GuardRepository>(
+      GuardRepository(apiClient: getIt<ApiClient>()));
+  getIt.registerSingleton<GuardService>(
+      GuardService(guardRepository: getIt<GuardRepository>()));
+  getIt.registerFactory(() => GuardBloc(guardService: getIt<GuardService>()));
+
+  getIt.registerSingleton<EventRepository>(
+      EventRepository(apiClient: getIt<ApiClient>()));
+  getIt.registerSingleton<EventService>(
+      EventService(eventRepository: getIt<EventRepository>()));
+  getIt.registerFactory(() => EventBloc(eventService: getIt<EventService>()));
 
   // Register SiteRepository and SiteBloc
   getIt.registerSingleton<SiteRepository>(
@@ -66,6 +87,12 @@ class MyApp extends StatelessWidget {
         BlocProvider<SiteBloc>(
           create: (context) => GetIt.instance<SiteBloc>(),
         ),
+        BlocProvider<EventBloc>(
+          create: (context) => GetIt.instance<EventBloc>(),
+        ),
+        BlocProvider<GuardBloc>(
+          create: (context) => GetIt.instance<GuardBloc>(),
+        ),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -88,19 +115,17 @@ class AuthHandler extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (context, state) {
-        if (state is AuthSuccess) {
-          return HomeScreen();
-        }
-        if (state is AuthChecked) {
-          if (state.isAuthenticated) {
-            return HomeScreen();
-          } else {
-            return LoginScreen();
-          }
-        }
-        return Scaffold(
-          body: Center(child: CircularProgressIndicator()),
-        );
+        // if (state is AuthSuccess) {
+        //   return HomeScreen();
+        // }
+        // if (state is AuthChecked) {
+        //   if (state.isAuthenticated) {
+        //     return HomeScreen();
+        //   } else {
+        //     return LoginScreen();
+        //   }
+        // }
+        return SplashScreen();
       },
     );
   }

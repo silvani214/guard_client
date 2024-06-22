@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:guard_client/ui/screens/sites/site_detail_screen.dart';
 import '../../../blocs/site/site_bloc.dart';
 import './site_form_screen.dart';
 import '../../widgets/initial_icon.dart';
 import '../../../utils/route_observer.dart';
+import './site_home_screen.dart';
 
 class SiteScreen extends StatefulWidget {
   @override
@@ -74,20 +76,11 @@ class _SiteScreenState extends State<SiteScreen> with RouteAware {
                     title: Text(site.name),
                     subtitle: Text(site.address!,
                         style: TextStyle(color: Colors.grey)),
-                    trailing: CircleAvatar(
-                      radius: 9,
-                      backgroundColor: Theme.of(context).primaryColor,
-                      child: Text(
-                        '${index + 1}',
-                        style: TextStyle(color: Colors.white, fontSize: 9),
-                      ),
-                    ),
                     onTap: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => SiteFormScreen(
-                            isEditMode: true,
+                          builder: (context) => SiteHomeScreen(
                             site: site,
                           ),
                         ),
