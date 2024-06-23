@@ -3,16 +3,12 @@ class EventModel {
   final int siteId;
   final int guardId;
   final String description;
-  final String title;
-  final String time;
 
   EventModel({
     required this.id,
     required this.siteId,
     required this.guardId,
     required this.description,
-    required this.title,
-    required this.time,
   });
 
   factory EventModel.fromJson(Map<String, dynamic> json) {
@@ -21,8 +17,6 @@ class EventModel {
       siteId: json['siteId'],
       guardId: json['guardId'],
       description: json['description'],
-      title: json['title'],
-      time: json['time'],
     );
   }
 
@@ -32,8 +26,6 @@ class EventModel {
       'siteId': siteId,
       'guardId': guardId,
       'description': description,
-      'title': title,
-      'time': time,
     };
   }
 }

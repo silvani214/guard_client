@@ -6,11 +6,10 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:guard_client/blocs/site/site_bloc.dart';
 import 'dart:async';
+import 'package:permission_handler/permission_handler.dart';
 
 class SiteMapScreen extends StatefulWidget {
-  final int siteId;
-
-  SiteMapScreen({required this.siteId});
+  final int siteId = 0;
 
   @override
   _SiteMapScreenState createState() => _SiteMapScreenState();
@@ -45,12 +44,11 @@ class _SiteMapScreenState extends State<SiteMapScreen> {
         password: '123456',
       );
       if (userCredential.user != null) {
-        print('LOGIN LOGIN LOGIN LOGIN LOGIN');
         _signInCompleter.complete();
       }
     } catch (e) {
-      print('Failed to sign in: $e');
       _signInCompleter.completeError(e);
+      print('Failed to sign in: $e');
     }
   }
 
@@ -58,20 +56,22 @@ class _SiteMapScreenState extends State<SiteMapScreen> {
     _databaseReference.onValue.listen((event) {
       var snapshot = event.snapshot;
       if (snapshot.exists) {
-        var data = snapshot.value! as List;
-        var email = data[1]['email'];
-        var latitude = data[1]['latitude'];
-        var longitude = data[1]['longitude'];
-        if (email == 'guard@test.com') {
-          // setState(() {
-          //   _markers.add(
-          //     Marker(
-          //       markerId: MarkerId(email),
-          //       position: LatLng(latitude, longitude),
-          //       infoWindow: InfoWindow(title: email),
-          //     ),
-          //   );
-          // });
+        var data = snapshot.value as List?;
+        if (data != null && data.isNotEmpty) {
+          var email = data[1]['email'];
+          var latitude = data[1]['latitude'];
+          var longitude = data[1]['longitude'];
+          if (email == 'guard@test.com') {
+            setState(() {
+              _markers.add(
+                Marker(
+                  markerId: MarkerId(email),
+                  position: LatLng(latitude, longitude),
+                  infoWindow: InfoWindow(title: email),
+                ),
+              );
+            });
+          }
         }
       }
     });
@@ -85,8 +85,6 @@ class _SiteMapScreenState extends State<SiteMapScreen> {
           .firstWhere((state) => state is SiteDetailLoaded),
       _mapControllerCompleter.future,
     ]).then((results) {
-      print('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA');
-      print(results);
       final siteState = results[1] as SiteDetailLoaded;
       _centerMapAndAddHitPoints(siteState);
       _fetchLocation();
@@ -153,9 +151,6 @@ class _SiteMapScreenState extends State<SiteMapScreen> {
         }
       },
       child: Scaffold(
-        appBar: AppBar(
-          title: Text('Site Information'),
-        ),
         body: GoogleMap(
           initialCameraPosition: CameraPosition(
             target: _sitePosition,

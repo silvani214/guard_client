@@ -11,12 +11,14 @@ class EventRepository {
 
   Future<List<EventModel>> fetchEvents(int id) async {
     try {
-      final response = await apiClient.get('/events/?siteId=$id');
+      final response =
+          await apiClient.get('/events/?siteId=$id&pageNum=0&pageSize=10');
       List<EventModel> events = (response.data['data'] as List)
           .map((event) => EventModel.fromJson(event))
           .toList();
       return events;
     } catch (e) {
+      print(e);
       throw Exception('Failed to fetch event list');
     }
   }

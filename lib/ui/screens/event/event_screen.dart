@@ -72,7 +72,7 @@ class _EventScreenState extends State<EventScreen> with RouteAware {
                   ),
                   child: ListTile(
                     leading: null, // Add the initials icon here
-                    title: Text(event.title),
+                    title: Text(event.description),
                     subtitle: Text(event.description,
                         style: TextStyle(color: Colors.grey)),
                     onTap: () {},

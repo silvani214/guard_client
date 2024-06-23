@@ -93,7 +93,7 @@ class SiteDetail extends StatelessWidget {
         padding: const EdgeInsets.all(16.0),
         child: Row(
           children: [
-            Icon(icon, size: 40, color: Theme.of(context).primaryColor),
+            Icon(icon, size: 40, color: Colors.black12),
             SizedBox(width: 16),
             Expanded(
               child: Column(

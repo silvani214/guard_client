@@ -23,7 +23,7 @@ class _SiteHomeScreenState extends State<SiteHomeScreen> {
   Widget build(BuildContext context) {
     final tabs = [
       SiteDetailScreen(site: widget.site),
-      SiteMapScreen(siteId: widget.site.id),
+      SiteMapScreen(),
       ChatRoom(), // Placeholder for the chat screen
       EventScreen(siteId: widget.site.id), // Placeholder for the event screen
     ];

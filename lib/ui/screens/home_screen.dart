@@ -1,21 +1,49 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:awesome_bottom_bar/awesome_bottom_bar.dart';
+import 'package:guard_client/ui/screens/sitemap/map.dart';
 import '../../blocs/site/site_bloc.dart';
 import './sites/site_screen.dart';
 import './setting/setting_screen.dart';
 import './profile/profile_screen.dart';
 import './chat/chat_screen.dart';
 import './chat/chat_room.dart';
+import 'package:guard_client/ui/screens/dashboard/dashboard_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
 
+const List<TabItem> items = [
+  TabItem(
+    icon: Icons.dashboard_outlined,
+    title: 'Dashbaord',
+  ),
+  TabItem(
+    icon: Icons.map_outlined,
+    title: 'Map',
+  ),
+  TabItem(
+    icon: Icons.chat_outlined,
+    title: 'Chat',
+  ),
+  TabItem(
+    icon: Icons.event_outlined,
+    title: 'Event',
+  ),
+  TabItem(
+    icon: Icons.report_outlined,
+    title: 'Report',
+  ),
+];
+
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
   final List<Widget> _screens = [
-    SiteScreen(),
+    DashboardScreen(),
+    SiteMapScreen(),
+    ChatRoom(),
     SettingsScreen(),
     ProfileScreen(),
   ];
@@ -28,25 +56,35 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    Color color = Colors.grey;
+    Color colorSelected = Color.fromARGB(255, 25, 74, 151);
+
     return Scaffold(
       body: _screens[_selectedIndex],
-      bottomNavigationBar: Theme(
-        data: Theme.of(context).copyWith(
-          splashFactory: NoSplash.splashFactory,
-          highlightColor: Colors.transparent,
-        ),
-        child: BottomNavigationBar(
-          items: [
-            BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Sites'),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.settings), label: 'Settings'),
-            BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.06),
+              spreadRadius: 12,
+              blurRadius: 15,
+              offset: Offset(0, 8), // changes position of shadow
+            ),
           ],
-          type: BottomNavigationBarType.fixed,
-          currentIndex: _selectedIndex,
-          selectedItemColor: Colors.white,
-          unselectedItemColor: Colors.grey,
-          onTap: _onItemTapped,
+        ),
+        child: BottomBarInspiredFancy(
+          items: items,
+          backgroundColor: Colors.white,
+          color: color,
+          colorSelected: colorSelected,
+          indexSelected: _selectedIndex,
+          styleIconFooter: StyleIconFooter.dot,
+          iconSize: 32,
+          titleStyle: TextStyle(
+              fontFamily: 'Roboto', fontSize: 14, fontWeight: FontWeight.w600),
+          onTap: (int index) => setState(() {
+            _selectedIndex = index;
+          }),
         ),
       ),
     );

@@ -29,6 +29,7 @@ import 'firebase_options.dart';
 import 'utils/app_theme.dart';
 import 'utils/route_observer.dart';
 import 'ui/screens/splash/splash_screen.dart';
+import './auth_handler.dart';
 
 final Logger logger = Logger();
 
@@ -106,27 +107,6 @@ class MyApp extends StatelessWidget {
           '/home': (context) => HomeScreen(),
         },
       ),
-    );
-  }
-}
-
-class AuthHandler extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<AuthBloc, AuthState>(
-      builder: (context, state) {
-        // if (state is AuthSuccess) {
-        //   return HomeScreen();
-        // }
-        // if (state is AuthChecked) {
-        //   if (state.isAuthenticated) {
-        //     return HomeScreen();
-        //   } else {
-        //     return LoginScreen();
-        //   }
-        // }
-        return SplashScreen();
-      },
     );
   }
 }
