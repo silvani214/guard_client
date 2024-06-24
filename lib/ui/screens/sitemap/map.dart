@@ -6,7 +6,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:guard_client/blocs/site/site_bloc.dart';
 import 'dart:async';
-import 'package:permission_handler/permission_handler.dart';
+import 'package:flutter/services.dart' show rootBundle;
 
 class SiteMapScreen extends StatefulWidget {
   final int siteId = 0;
@@ -32,8 +32,10 @@ class _SiteMapScreenState extends State<SiteMapScreen> {
     super.initState();
     _sitePosition =
         LatLng(45.427675000001365, -108.40590330000137); // Default position
+
+    context.read<SiteBloc>().add(FetchSites());
     _signInAndFetchLocation();
-    context.read<SiteBloc>().add(GetSite(id: widget.siteId));
+//    context.read<SiteBloc>().add(GetSite(id: widget.siteId));
     _runFunctionAfterBothComplete();
   }
 
@@ -82,10 +84,10 @@ class _SiteMapScreenState extends State<SiteMapScreen> {
       _signInCompleter.future,
       BlocProvider.of<SiteBloc>(context)
           .stream
-          .firstWhere((state) => state is SiteDetailLoaded),
+          .firstWhere((state) => state is SiteListLoaded),
       _mapControllerCompleter.future,
     ]).then((results) {
-      final siteState = results[1] as SiteDetailLoaded;
+      final siteState = results[1] as SiteListLoaded;
       _centerMapAndAddHitPoints(siteState);
       _fetchLocation();
     }).catchError((error) {
@@ -93,16 +95,21 @@ class _SiteMapScreenState extends State<SiteMapScreen> {
     });
   }
 
-  void _centerMapAndAddHitPoints(SiteDetailLoaded state) {
-    var site = state.site;
+  void _centerMapAndAddHitPoints(SiteListLoaded state) {
+    var siteList = state.sites;
     LatLngBounds bounds;
 
-    setState(() {
-      _sitePosition = LatLng(site.location.latitude, site.location.longitude);
-      _circles.add(
+    Set<Marker> newMarkers = {};
+    Set<Circle> newCircles = {};
+
+    for (var site in siteList) {
+      LatLng sitePosition =
+          LatLng(site.location.latitude, site.location.longitude);
+
+      newCircles.add(
         Circle(
-          circleId: CircleId('siteCircle'),
-          center: _sitePosition,
+          circleId: CircleId('siteCircle_${site.id}'),
+          center: sitePosition,
           radius: 1000,
           fillColor: Colors.red.withOpacity(0.5),
           strokeColor: Colors.red,
@@ -110,19 +117,30 @@ class _SiteMapScreenState extends State<SiteMapScreen> {
         ),
       );
 
-      _markers.add(
+      newMarkers.add(
         Marker(
-          markerId: MarkerId('site'),
-          position: _sitePosition,
+          markerId: MarkerId('site_${site.id}'),
+          position: sitePosition,
           infoWindow: InfoWindow(title: site.name),
         ),
       );
+    }
+
+    setState(() {
+      _circles = newCircles;
+      _markers = newMarkers;
     });
-    bounds = _createBoundsFromLatLngList([_sitePosition]);
-    _mapController.animateCamera(
-      CameraUpdate.newLatLngBounds(
-          bounds, 50), // Padding of 50 to keep site at center
-    );
+
+    if (siteList.isNotEmpty) {
+      bounds = _createBoundsFromLatLngList(siteList
+          .map(
+              (site) => LatLng(site.location.latitude, site.location.longitude))
+          .toList());
+      _mapController.animateCamera(
+        CameraUpdate.newLatLngBounds(
+            bounds, 50), // Padding of 50 to keep site at center
+      );
+    }
   }
 
   LatLngBounds _createBoundsFromLatLngList(List<LatLng> positions) {
@@ -143,25 +161,67 @@ class _SiteMapScreenState extends State<SiteMapScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<SiteBloc, SiteState>(
-      listener: (context, state) {
-        if (state is SiteDetailLoaded) {
-          // _centerMapAndAddHitPoints(state);
-          print("LOADED LOADED LOADED");
-        }
-      },
+    return SafeArea(
       child: Scaffold(
-        body: GoogleMap(
-          initialCameraPosition: CameraPosition(
-            target: _sitePosition,
-            zoom: 14.0,
+        endDrawer: Drawer(
+          child: BlocBuilder<SiteBloc, SiteState>(
+            builder: (context, state) {
+              if (state is SiteListLoaded) {
+                return ListView.builder(
+                  itemCount: state.sites.length,
+                  itemBuilder: (context, index) {
+                    final site = state.sites[index];
+                    return ListTile(
+                      title: Text(site.name),
+                      onTap: () {
+                        Navigator.of(context).pop();
+                        _mapController.animateCamera(
+                          CameraUpdate.newLatLng(
+                            LatLng(site.location.latitude,
+                                site.location.longitude),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                );
+              } else if (state is SiteLoading) {
+                return Center(child: CircularProgressIndicator());
+              } else {
+                return Center(child: Text('Failed to load sites'));
+              }
+            },
           ),
-          markers: _markers,
-          circles: _circles,
-          onMapCreated: (GoogleMapController controller) {
-            _mapController = controller;
-            _mapControllerCompleter.complete();
-          },
+        ),
+        body: Stack(
+          children: [
+            GoogleMap(
+              initialCameraPosition: CameraPosition(
+                target: _sitePosition,
+                zoom: 14.0,
+              ),
+              markers: _markers,
+              circles: _circles,
+              onMapCreated: (GoogleMapController controller) {
+                _mapController = controller;
+                _mapControllerCompleter.complete();
+              },
+            ),
+            Positioned(
+              top: 10,
+              right: 10,
+              child: Builder(
+                builder: (context) {
+                  return FloatingActionButton(
+                    onPressed: () {
+                      Scaffold.of(context).openEndDrawer();
+                    },
+                    child: Icon(Icons.menu),
+                  );
+                },
+              ),
+            ),
+          ],
         ),
       ),
     );

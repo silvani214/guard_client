@@ -81,7 +81,8 @@ flutter:
     - assets/logo.png
     - assets/spinner.gif
     - assets/site_placeholder.png
-
+    - assets/map_style.json
+    
   fonts:
     - family: Roboto
       fonts:
