@@ -4,15 +4,15 @@ import '../../../blocs/event/event_bloc.dart';
 import '../../widgets/initial_icon.dart';
 import '../../../utils/route_observer.dart';
 
-class EventScreen extends StatefulWidget {
+class ReportScreen extends StatefulWidget {
   final int siteId;
 
-  EventScreen({required this.siteId});
+  ReportScreen({required this.siteId});
   @override
-  _EventScreenState createState() => _EventScreenState();
+  _ReportScreenState createState() => _ReportScreenState();
 }
 
-class _EventScreenState extends State<EventScreen> with RouteAware {
+class _ReportScreenState extends State<ReportScreen> with RouteAware {
   @override
   void initState() {
     super.initState();
@@ -47,7 +47,7 @@ class _EventScreenState extends State<EventScreen> with RouteAware {
               padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
               child: Center(
                   child: Text(
-                'Event',
+                'Report',
                 style: TextStyle(
                   color: Theme.of(context).primaryColor,
                   fontFamily: 'Roboto',
@@ -65,7 +65,7 @@ class _EventScreenState extends State<EventScreen> with RouteAware {
           if (state is EventLoading) {
             return Center(child: CircularProgressIndicator());
           } else if (state is EventError) {
-            return Center(child: Text('Failed to load events'));
+            return Center(child: Text('Failed to load reports'));
           } else if (state is EventListLoaded) {
             return Scrollbar(
               child: ListView.builder(
@@ -93,7 +93,7 @@ class _EventScreenState extends State<EventScreen> with RouteAware {
               ),
             );
           } else {
-            return Center(child: Text('No events available'));
+            return Center(child: Text('No reports available'));
           }
         },
       ),

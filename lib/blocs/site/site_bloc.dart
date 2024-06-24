@@ -22,6 +22,7 @@ class SiteBloc extends Bloc<SiteEvent, SiteState> {
     print('fetch sites');
     if (_cachedSiteList != null) {
       print('sites loaded');
+      print(_cachedSiteList);
       emit(SiteListLoaded(sites: _cachedSiteList!));
     } else {
       print('sites loading');

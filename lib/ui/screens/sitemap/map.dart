@@ -33,9 +33,9 @@ class _SiteMapScreenState extends State<SiteMapScreen> {
     _sitePosition =
         LatLng(45.427675000001365, -108.40590330000137); // Default position
 
-    context.read<SiteBloc>().add(FetchSites());
     _signInAndFetchLocation();
 //    context.read<SiteBloc>().add(GetSite(id: widget.siteId));
+    context.read<SiteBloc>().add(RefreshSites());
     _runFunctionAfterBothComplete();
   }
 
@@ -87,6 +87,7 @@ class _SiteMapScreenState extends State<SiteMapScreen> {
           .firstWhere((state) => state is SiteListLoaded),
       _mapControllerCompleter.future,
     ]).then((results) {
+      print('all are completed all are completed all are completed');
       final siteState = results[1] as SiteListLoaded;
       _centerMapAndAddHitPoints(siteState);
       _fetchLocation();
@@ -96,6 +97,8 @@ class _SiteMapScreenState extends State<SiteMapScreen> {
   }
 
   void _centerMapAndAddHitPoints(SiteListLoaded state) {
+    print('site list loading site list loading site list loading');
+
     var siteList = state.sites;
     LatLngBounds bounds;
 
@@ -161,8 +164,11 @@ class _SiteMapScreenState extends State<SiteMapScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
+    return Scaffold(
+      backgroundColor: Color.fromARGB(255, 245, 247, 250),
+      body: SafeArea(
+          child: Scaffold(
+        backgroundColor: Color.fromARGB(255, 245, 247, 250),
         endDrawer: Drawer(
           child: BlocBuilder<SiteBloc, SiteState>(
             builder: (context, state) {
@@ -223,7 +229,7 @@ class _SiteMapScreenState extends State<SiteMapScreen> {
             ),
           ],
         ),
-      ),
+      )),
     );
   }
 }

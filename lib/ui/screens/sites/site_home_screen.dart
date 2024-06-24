@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:guard_client/ui/screens/report/report_screen.dart';
 import '../sitemap/map.dart';
 import '../event/event_screen.dart';
 import '../chat/chat_room.dart';
@@ -26,6 +27,7 @@ class _SiteHomeScreenState extends State<SiteHomeScreen> {
       SiteMapScreen(),
       ChatRoom(), // Placeholder for the chat screen
       EventScreen(siteId: widget.site.id), // Placeholder for the event screen
+      ReportScreen(siteId: widget.site.id)
     ];
 
     return Scaffold(

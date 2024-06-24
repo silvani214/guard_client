@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:awesome_bottom_bar/awesome_bottom_bar.dart';
+import 'package:guard_client/ui/screens/event/event_screen.dart';
+import 'package:guard_client/ui/screens/report/report_screen.dart';
 import 'package:guard_client/ui/screens/sitemap/map.dart';
 import '../../blocs/site/site_bloc.dart';
 import './sites/site_screen.dart';
 import './setting/setting_screen.dart';
+import './report/report_screen.dart';
 import './profile/profile_screen.dart';
 import './chat/chat_screen.dart';
 import './chat/chat_room.dart';
@@ -44,8 +47,12 @@ class _HomeScreenState extends State<HomeScreen> {
     DashboardScreen(),
     SiteMapScreen(),
     ChatRoom(),
-    SettingsScreen(),
-    ProfileScreen(),
+    EventScreen(
+      siteId: 0,
+    ),
+    ReportScreen(
+      siteId: 0,
+    ),
   ];
 
   void _onItemTapped(int index) {

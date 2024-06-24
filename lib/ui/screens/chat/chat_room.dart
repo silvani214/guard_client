@@ -18,8 +18,26 @@ class _ChatRoomState extends State<ChatRoom> with RouteAware {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Chat'),
+      backgroundColor: Color.fromARGB(255, 245, 247, 250),
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(40.0), // Set the custom height
+        child: AppBar(
+          title: Padding(
+              padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
+              child: Center(
+                  child: Text(
+                'Chat',
+                style: TextStyle(
+                  color: Theme.of(context).primaryColor,
+                  fontFamily: 'Roboto',
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ))),
+          surfaceTintColor: Color.fromARGB(255, 245, 247, 250),
+          backgroundColor: Color.fromARGB(255, 245, 247, 250),
+          elevation: 0, // Remove shadow
+        ),
       ),
       body: BlocBuilder<GuardBloc, GuardState>(
         builder: (context, state) {

@@ -238,43 +238,45 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             return Center(child: Text('Failed to load events'));
                           } else if (state is SiteListLoaded) {
                             // Fetch events for each site
-                            return ListView.builder(
-                              shrinkWrap: true,
-                              itemCount: state.sites.length,
-                              itemBuilder: (context, index) {
-                                return BlocBuilder<EventBloc, EventState>(
-                                  builder: (context, eventState) {
-                                    if (eventState is EventListLoaded) {
-                                      return Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: eventState.events.map(
-                                          (event) {
-                                            return Container(
-                                              margin:
-                                                  EdgeInsets.only(bottom: 8),
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  ListTile(
-                                                    title:
-                                                        Text(event.description),
-                                                    onTap: () {
-                                                      // Navigate to event details if needed
-                                                    },
-                                                  ),
-                                                ],
-                                              ),
-                                            );
-                                          },
-                                        ).toList(),
-                                      );
-                                    }
-                                    return SizedBox.shrink();
-                                  },
-                                );
-                              },
+                            return Scrollbar(
+                              child: ListView.builder(
+                                shrinkWrap: true,
+                                itemCount: state.sites.length,
+                                itemBuilder: (context, index) {
+                                  return BlocBuilder<EventBloc, EventState>(
+                                    builder: (context, eventState) {
+                                      if (eventState is EventListLoaded) {
+                                        return Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: eventState.events.map(
+                                            (event) {
+                                              return Container(
+                                                margin:
+                                                    EdgeInsets.only(bottom: 8),
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    ListTile(
+                                                      title: Text(
+                                                          event.description),
+                                                      onTap: () {
+                                                        // Navigate to event details if needed
+                                                      },
+                                                    ),
+                                                  ],
+                                                ),
+                                              );
+                                            },
+                                          ).toList(),
+                                        );
+                                      }
+                                      return SizedBox.shrink();
+                                    },
+                                  );
+                                },
+                              ),
                             );
                           } else {
                             return Center(child: Text('No events available'));
