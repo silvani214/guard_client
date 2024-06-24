@@ -5,6 +5,7 @@ import 'package:guard_client/ui/widgets/marqee.dart';
 import 'package:guard_client/ui/widgets/placeholder_image.dart';
 import 'package:guard_client/blocs/site/site_bloc.dart';
 import 'package:guard_client/blocs/event/event_bloc.dart';
+import 'package:guard_client/ui/screens/sites/site_detail_screen.dart';
 import 'dart:async';
 
 class DashboardScreen extends StatefulWidget {
@@ -166,34 +167,41 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             itemCount: state.sites.length,
                             itemBuilder: (context, index) {
                               final site = state.sites[index];
-                              return Container(
-                                width: 100, // Adjust as needed
-                                margin: EdgeInsets.only(right: 16),
-                                child: Column(
-                                  children: [
-                                    PlaceholderImage(), // Use the PlaceholderImage widget here
-                                    SizedBox(height: 8),
-                                    Container(
-                                      width:
-                                          100, // Set the width to be the same as the image
-                                      child: site.name.length > 10
-                                          ? Marquee(
-                                              text: site.name,
-                                              style: TextStyle(
-                                                  fontSize: 14,
-                                                  fontWeight: FontWeight.bold),
-                                            )
-                                          : Center(
-                                              child: Text(
-                                                site.name,
-                                                style: TextStyle(
-                                                    fontSize: 14,
-                                                    fontWeight:
-                                                        FontWeight.bold),
-                                              ),
-                                            ),
+                              return GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          SiteDetailScreen(site: site),
                                     ),
-                                  ],
+                                  );
+                                },
+                                child: Container(
+                                  width: 100, // Adjust as needed
+                                  margin: EdgeInsets.only(right: 16),
+                                  child: Column(
+                                    children: [
+                                      PlaceholderImage(), // Use the PlaceholderImage widget here
+                                      SizedBox(height: 8),
+                                      Container(
+                                        width:
+                                            100, // Set the width to be the same as the image
+                                        child: site.name.length > 10
+                                            ? Marquee(
+                                                text: site.name,
+                                                style: TextStyle(fontSize: 14),
+                                              )
+                                            : Center(
+                                                child: Text(
+                                                  site.name,
+                                                  style:
+                                                      TextStyle(fontSize: 14),
+                                                ),
+                                              ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               );
                             },

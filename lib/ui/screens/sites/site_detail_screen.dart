@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import '../../../models/site_model.dart';
-import '../sitemap/map.dart';
-import './map_screen.dart';
+import 'package:guard_client/models/site_model.dart';
 
 class SiteDetailScreen extends StatelessWidget {
   final SiteModel site;
@@ -12,115 +10,100 @@ class SiteDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Site Details'),
+      backgroundColor: Color.fromARGB(255, 245, 247, 250),
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(40.0), // Set the custom height
+        child: AppBar(
+          surfaceTintColor: Theme.of(context).primaryColor,
+          backgroundColor: Color.fromARGB(255, 245, 247, 250),
+          elevation: 0, // Remove shadow
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back, color: Theme.of(context).primaryColor),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+          centerTitle: true, // Center the title
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: SiteDetail(site: site),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildInfoSection(
+              context,
+              label: 'Name',
+              content: site.name,
+            ),
+            _buildInfoSection(
+              context,
+              label: 'Description',
+              content: site.description ?? 'No Description',
+            ),
+            _buildInfoSection(
+              context,
+              label: 'Address',
+              content: site.address ?? 'No Address Available',
+            ),
+            SizedBox(height: 16),
+            Expanded(
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: GoogleMap(
+                    initialCameraPosition: CameraPosition(
+                      target: LatLng(
+                          site.location.latitude, site.location.longitude),
+                      zoom: 14.0,
+                    ),
+                    markers: {
+                      Marker(
+                        markerId: MarkerId(site.name),
+                        position: LatLng(
+                            site.location.latitude, site.location.longitude),
+                        infoWindow: InfoWindow(title: site.name),
+                      ),
+                    },
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
-}
 
-class SiteDetail extends StatelessWidget {
-  final SiteModel site;
-
-  SiteDetail({required this.site});
-
-  @override
-  Widget build(BuildContext context) {
-    String name = site.name;
-    String description = site.description ?? 'N/A';
-    String address = site.address ?? 'No address provided';
-    String location = '${site.location.latitude}\n${site.location.longitude}';
-
-    return SingleChildScrollView(
+  Widget _buildInfoSection(BuildContext context,
+      {required String label, required String content}) {
+    return Container(
+      width: double.infinity,
+      margin: EdgeInsets.only(bottom: 16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      padding: EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildDetailCard(
-            context,
-            icon: Icons.location_city,
-            title: 'Name',
-            content: name,
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Theme.of(context).primaryColor,
+            ),
           ),
-          SizedBox(height: 16),
-          _buildDetailCard(
-            context,
-            icon: Icons.description,
-            title: 'Description',
-            content: description,
-          ),
-          SizedBox(height: 16),
-          _buildDetailCard(
-            context,
-            icon: Icons.home,
-            title: 'Address',
-            content: address,
-            isAddress: true,
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => MapScreen(
-                    location:
-                        LatLng(site.location.latitude, site.location.longitude),
-                  ),
-                ),
-              );
-            },
+          SizedBox(height: 8),
+          Text(
+            content,
+            style: TextStyle(fontSize: 16),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildDetailCard(
-    BuildContext context, {
-    required IconData icon,
-    required String title,
-    required String content,
-    bool isAddress = false,
-    VoidCallback? onPressed,
-  }) {
-    return Card(
-      elevation: 3,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Row(
-          children: [
-            Icon(icon, size: 40, color: Colors.black12),
-            SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                  SizedBox(height: 8),
-                  Text(
-                    content,
-                    style: TextStyle(fontSize: 16),
-                  ),
-                ],
-              ),
-            ),
-            if (isAddress && onPressed != null)
-              IconButton(
-                icon: Icon(Icons.map, color: Theme.of(context).primaryColor),
-                onPressed: onPressed,
-              ),
-          ],
-        ),
       ),
     );
   }
