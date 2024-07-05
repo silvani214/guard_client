@@ -1,15 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:awesome_bottom_bar/awesome_bottom_bar.dart';
 import 'package:guard_client/ui/screens/event/event_screen.dart';
 import 'package:guard_client/ui/screens/report/report_screen.dart';
 import 'package:guard_client/ui/screens/sitemap/map.dart';
-import '../../blocs/site/site_bloc.dart';
-import './sites/site_screen.dart';
-import './setting/setting_screen.dart';
-import './report/report_screen.dart';
-import './profile/profile_screen.dart';
-import './chat/chat_screen.dart';
 import './chat/chat_room.dart';
 import 'package:guard_client/ui/screens/dashboard/dashboard_screen.dart';
 
@@ -35,10 +28,10 @@ const List<TabItem> items = [
     icon: Icons.event_outlined,
     title: 'Event',
   ),
-  TabItem(
-    icon: Icons.report_outlined,
-    title: 'Report',
-  ),
+  // TabItem(
+  //   icon: Icons.report_outlined,
+  //   title: 'Report',
+  // ),
 ];
 
 class _HomeScreenState extends State<HomeScreen> {

@@ -55,6 +55,12 @@ dependencies:
   awesome_bottom_bar: ^1.2.4
   fading_edge_scrollview: ^4.1.1
   permission_handler: ^11.3.1
+  flutter_awesome_select: ^6.5.0
+  flutter_rounded_date_picker: ^3.0.4
+  dropdown_button2: ^2.3.9
+  syncfusion_flutter_datepicker: ^26.1.40
+  flutter_date_range_picker: ^0.1.1
+  custom_date_range_picker: ^1.1.0
 
 dev_dependencies:
   flutter_test:

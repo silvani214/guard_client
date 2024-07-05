@@ -129,6 +129,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.8"
+  custom_date_range_picker:
+    dependency: "direct main"
+    description:
+      name: custom_date_range_picker
+      sha256: "3e5b9fdd7732d8511832d805cf4dfe755e60d69afd5f3e1d298aa22f174621e2"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.0"
   diffutil_dart:
     dependency: transitive
     description:
@@ -145,6 +153,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.4.3+1"
+  dropdown_button2:
+    dependency: "direct main"
+    description:
+      name: dropdown_button2
+      sha256: b0fe8d49a030315e9eef6c7ac84ca964250155a6224d491c1365061bc974a9e1
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.3.9"
   equatable:
     dependency: "direct main"
     description:
@@ -270,6 +286,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_awesome_select:
+    dependency: "direct main"
+    description:
+      name: flutter_awesome_select
+      sha256: f7beb2704bd3128e4bcd6931e741971cdebf5e13ef01e8e090349f89699e1d12
+      url: "https://pub.dev"
+    source: hosted
+    version: "6.5.0"
   flutter_bloc:
     dependency: "direct main"
     description:
@@ -294,6 +318,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.6.13"
+  flutter_date_range_picker:
+    dependency: "direct main"
+    description:
+      name: flutter_date_range_picker
+      sha256: a8f8f4e11721e9d1bcc42e143129676488c5724136038670211865fc28ff779f
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.1"
   flutter_link_previewer:
     dependency: transitive
     description:
@@ -339,6 +371,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.19"
+  flutter_rounded_date_picker:
+    dependency: "direct main"
+    description:
+      name: flutter_rounded_date_picker
+      sha256: e6aa2dc5d3b44e8bbe85ef901be69eac59ba4136427f11f4c8b2a303e1e774e7
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.0.4"
   flutter_svg:
     dependency: "direct main"
     description:
@@ -810,6 +850,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.2.0"
+  syncfusion_flutter_core:
+    dependency: transitive
+    description:
+      name: syncfusion_flutter_core
+      sha256: "87cbeee9b916e013eedbd43bf07f253c34dd5184c88325e5227434e0f8b89a68"
+      url: "https://pub.dev"
+    source: hosted
+    version: "26.1.40"
+  syncfusion_flutter_datepicker:
+    dependency: "direct main"
+    description:
+      name: syncfusion_flutter_datepicker
+      sha256: ebc10c86618a8c410f4707dc6ff354daccb13d5f8a65f5fffa69a07806e4e0dd
+      url: "https://pub.dev"
+    source: hosted
+    version: "26.1.40"
   term_glyph:
     dependency: transitive
     description:

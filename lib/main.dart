@@ -10,6 +10,8 @@ import 'repositories/auth_repository.dart';
 import 'repositories/site_repository.dart';
 import 'repositories/guard_repository.dart';
 import 'repositories/event_repository.dart';
+import 'repositories/visitor_repository.dart';
+import 'repositories/report_repository.dart';
 import 'services/api_client.dart';
 import 'ui/screens/auth/signup_screen.dart';
 import 'ui/screens/home_screen.dart';
@@ -61,6 +63,7 @@ void setup() {
 
   getIt.registerSingleton<EventRepository>(
       EventRepository(apiClient: getIt<ApiClient>()));
+
   getIt.registerSingleton<EventService>(
       EventService(eventRepository: getIt<EventRepository>()));
   getIt.registerFactory(() => EventBloc(eventService: getIt<EventService>()));
@@ -71,6 +74,11 @@ void setup() {
   getIt.registerSingleton<SiteService>(
       SiteService(siteRepository: getIt<SiteRepository>()));
   getIt.registerFactory(() => SiteBloc(siteService: getIt<SiteService>()));
+
+  getIt.registerSingleton<VisitorRepository>(
+      VisitorRepository(apiClient: getIt<ApiClient>()));
+  getIt.registerSingleton<ReportRepository>(
+      ReportRepository(apiClient: getIt<ApiClient>()));
 }
 
 class MyApp extends StatelessWidget {

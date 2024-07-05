@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:guard_client/models/site_model.dart';
+import 'package:guard_client/ui/screens/event/event_screen.dart';
+import 'package:guard_client/ui/screens/sites/site_visitor_screen.dart';
+import 'package:guard_client/ui/screens/sites/site_report_screen.dart';
 
 class SiteDetailScreen extends StatelessWidget {
   final SiteModel site;
@@ -14,15 +17,23 @@ class SiteDetailScreen extends StatelessWidget {
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(40.0), // Set the custom height
         child: AppBar(
-          surfaceTintColor: Theme.of(context).primaryColor,
-          backgroundColor: Color.fromARGB(255, 245, 247, 250),
-          elevation: 0, // Remove shadow
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back, color: Theme.of(context).primaryColor),
-            onPressed: () => Navigator.of(context).pop(),
-          ),
-          centerTitle: true, // Center the title
-        ),
+            surfaceTintColor: Theme.of(context).primaryColor,
+            backgroundColor: Color.fromARGB(255, 245, 247, 250),
+            elevation: 0, // Remove shadow
+            leading: IconButton(
+              icon:
+                  Icon(Icons.arrow_back, color: Theme.of(context).primaryColor),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+            title: Text(
+              'Detail',
+              style: TextStyle(
+                color: Theme.of(context).primaryColor,
+                fontFamily: 'Roboto',
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            )),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -43,6 +54,51 @@ class SiteDetailScreen extends StatelessWidget {
               context,
               label: 'Address',
               content: site.address ?? 'No Address Available',
+            ),
+            SizedBox(height: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                _buildVerticalButton(
+                  context,
+                  icon: Icons.person,
+                  label: 'Visitor',
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => VisitorScreen(siteId: site.id),
+                      ),
+                    );
+                  },
+                ),
+                SizedBox(width: 24), // Space between buttons
+                _buildVerticalButton(
+                  context,
+                  icon: Icons.report,
+                  label: 'Report',
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => ReportScreen(siteId: site.id),
+                      ),
+                    );
+                  },
+                ),
+                SizedBox(width: 24),
+                _buildVerticalButton(
+                  context,
+                  icon: Icons.event,
+                  label: 'Event',
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            EventScreen(siteId: site.id, isDetail: true),
+                      ),
+                    );
+                  },
+                ),
+              ],
             ),
             SizedBox(height: 16),
             Expanded(
@@ -103,6 +159,29 @@ class SiteDetailScreen extends StatelessWidget {
             content,
             style: TextStyle(fontSize: 16),
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildVerticalButton(BuildContext context,
+      {required IconData icon,
+      required String label,
+      required VoidCallback onPressed}) {
+    return ElevatedButton(
+      onPressed: onPressed,
+      style: ElevatedButton.styleFrom(
+        minimumSize: Size(100, 80), // Adjust size to fit the icon and label
+        foregroundColor: Colors.white,
+        padding: EdgeInsets.all(8),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(icon, size: 24),
+          SizedBox(height: 4),
+          Text(label, style: TextStyle(fontSize: 14)),
         ],
       ),
     );

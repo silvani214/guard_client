@@ -228,7 +228,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Events',
+                      'Recent Activity',
                       style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
