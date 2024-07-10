@@ -38,6 +38,7 @@ class _ReportScreenState extends State<ReportScreen> with RouteAware {
   @override
   void initState() {
     super.initState();
+    _selectedSiteId = widget.siteId;
     context.read<SiteBloc>().add(FetchSites());
 
     _pagingController.addPageRequestListener((pageKey) {

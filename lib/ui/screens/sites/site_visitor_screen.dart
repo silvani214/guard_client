@@ -35,6 +35,7 @@ class _VisitorScreenState extends State<VisitorScreen> with RouteAware {
   @override
   void initState() {
     super.initState();
+    _selectedSiteId = widget.siteId;
     context.read<SiteBloc>().add(FetchSites());
 
     _pagingController.addPageRequestListener((pageKey) {

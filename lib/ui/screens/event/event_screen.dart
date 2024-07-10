@@ -35,7 +35,7 @@ class _EventScreenState extends State<EventScreen> with RouteAware {
   void initState() {
     super.initState();
     context.read<SiteBloc>().add(FetchSites());
-
+    _selectedSiteId = widget.siteId;
     _pagingController.addPageRequestListener((pageKey) {
       _fetchPage(pageKey);
     });
