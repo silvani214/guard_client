@@ -43,8 +43,6 @@ class _ChatScreenState extends State<ChatScreen> {
   Future<void> initializeAsync() async {
     target = widget.guard;
     me = (await getIt<AuthService>().getUserDetail())!;
-    print(target.email);
-    print(me.email);
     _messagesRef.onChildAdded.listen(_onMessageAdded);
     _listenToOpponentTyping();
   }

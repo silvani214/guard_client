@@ -14,7 +14,6 @@ class SiteRepository {
     int id = user!.id;
     try {
       final response = await apiClient.get('/sites/');
-      print(response.data['data']);
       List<SiteModel> sites = (response.data['data'] as List)
           .map((site) => SiteModel.fromJson(site['site']))
           .toList();

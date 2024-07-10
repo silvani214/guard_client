@@ -43,7 +43,6 @@ class _AuthHandlerState extends State<AuthHandler> {
           }
 
           if (_isAuthChecked && _isTimerComplete) {
-            print(_isAuthChecked);
             return _isAuthenticated ? HomeScreen() : LoginScreen();
           }
 

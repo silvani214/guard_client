@@ -16,7 +16,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void initState() {
     super.initState();
     userFuture = getIt<AuthService>().getUserDetail();
-    print(userFuture);
   }
 
   @override

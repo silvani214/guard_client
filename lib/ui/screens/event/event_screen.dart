@@ -3,10 +3,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:intl/intl.dart';
 import 'package:custom_date_range_picker/custom_date_range_picker.dart';
+import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import '../../../blocs/event/event_bloc.dart';
 import '../../../blocs/site/site_bloc.dart';
 import '../../widgets/initial_icon.dart';
 import '../../../utils/route_observer.dart';
+import '../../../models/event_model.dart';
+import '../../../models/site_model.dart';
+import '../../../models/location_model.dart';
+import 'dart:async';
 
 class EventScreen extends StatefulWidget {
   final int? siteId; // Allow siteId to be nullable
@@ -20,16 +25,51 @@ class EventScreen extends StatefulWidget {
 
 class _EventScreenState extends State<EventScreen> with RouteAware {
   int? _selectedSiteId;
-  DateTime? startDate = DateTime.now();
+  DateTime? startDate = DateTime.now().subtract(Duration(days: 30));
   DateTime? endDate = DateTime.now();
   String _range = '';
+  final PagingController<int, EventModel> _pagingController =
+      PagingController(firstPageKey: 0);
 
   @override
   void initState() {
     super.initState();
-    context.read<EventBloc>().add(
-        FetchEvents(id: widget.siteId ?? 0)); // Default to 0 if siteId is null
     context.read<SiteBloc>().add(FetchSites());
+
+    _pagingController.addPageRequestListener((pageKey) {
+      _fetchPage(pageKey);
+    });
+  }
+
+  Future<void> _fetchPage(int pageKey) async {
+    try {
+      final newEvents = await _fetchEvents(pageKey);
+
+      final isLastPage = newEvents.length < 10;
+      if (isLastPage) {
+        _pagingController.appendLastPage(newEvents);
+      } else {
+        final nextPageKey = pageKey + newEvents.length;
+        _pagingController.appendPage(newEvents, nextPageKey);
+      }
+    } catch (error) {
+      _pagingController.error = error;
+    }
+  }
+
+  Future<List<EventModel>> _fetchEvents(int pageKey) async {
+    final Completer<List<EventModel>> completer = Completer();
+    context.read<EventBloc>().add(FetchEvents(
+        id: _selectedSiteId ?? widget.siteId ?? 0,
+        pageNum: pageKey,
+        startDate: startDate,
+        endDate: endDate,
+        completer: completer));
+    return completer.future;
+  }
+
+  void _applyFilters() {
+    _pagingController.refresh();
   }
 
   @override
@@ -41,22 +81,13 @@ class _EventScreenState extends State<EventScreen> with RouteAware {
   @override
   void dispose() {
     routeObserver.unsubscribe(this);
+    _pagingController.dispose();
     super.dispose();
   }
 
   @override
   void didPopNext() {
-    context.read<EventBloc>().add(
-        FetchEvents(id: widget.siteId ?? 0)); // Default to 0 if siteId is null
-  }
-
-  void _applyFilters() {
-    context.read<EventBloc>().add(FetchEvents(
-          id: _selectedSiteId ??
-              widget.siteId ??
-              0, // Default to 0 if siteId is null
-          // dateRange: DateTimeRange(start: startDate!, end: endDate!),
-        ));
+    _applyFilters();
   }
 
   Widget title() {
@@ -158,7 +189,7 @@ class _EventScreenState extends State<EventScreen> with RouteAware {
                           ),
                         );
                       } else {
-                        return CircularProgressIndicator();
+                        return SizedBox.shrink();
                       }
                     },
                   ),
@@ -211,58 +242,62 @@ class _EventScreenState extends State<EventScreen> with RouteAware {
             ),
           ),
           Expanded(
-            child: BlocBuilder<EventBloc, EventState>(
+            child: BlocBuilder<SiteBloc, SiteState>(
               builder: (context, state) {
-                if (state is EventLoading) {
-                  return Center(child: CircularProgressIndicator());
-                } else if (state is EventError) {
-                  return Center(child: Text('Failed to load events'));
-                } else if (state is EventListLoaded) {
-                  return Scrollbar(
-                    child: ListView.builder(
-                      itemCount: state.events.length,
-                      itemBuilder: (context, index) {
-                        final event = state.events[index];
-                        final formattedDate = DateFormat('yyyy-MM-dd')
-                            .format(event.timestamp); // Format the timestamp
-                        return Container(
-                          decoration: BoxDecoration(
-                            border: Border(
-                              bottom: BorderSide(
-                                width: 0.5,
-                                color: Color.fromARGB(100, 200, 200, 200),
+                return PagedListView<int, EventModel>(
+                  pagingController: _pagingController,
+                  builderDelegate: PagedChildBuilderDelegate<EventModel>(
+                    itemBuilder: (context, event, index) {
+                      final formattedDate = DateFormat('yyyy-MM-dd')
+                          .format(event.timestamp); // Format the timestamp
+                      String? siteName;
+                      if (state is SiteListLoaded) {
+                        siteName = state.sites
+                            .firstWhere((site) => site.id == event.siteId,
+                                orElse: () => SiteModel(
+                                    id: 0,
+                                    name: 'Unknown Site',
+                                    description: '',
+                                    location: LocationModel(
+                                        latitude: 0.0, longitude: 0.0)))
+                            .name;
+                      }
+                      return Container(
+                        decoration: BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                              width: 0.5,
+                              color: Color.fromARGB(100, 200, 200, 200),
+                            ),
+                          ),
+                        ),
+                        child: ListTile(
+                          leading: null, // Add the initials icon here
+                          title: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                child: Text(event.description),
                               ),
-                            ),
-                          ),
-                          child: ListTile(
-                            leading: null, // Add the initials icon here
-                            title: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                      _truncateDescription(event.description)),
+                              Text(
+                                formattedDate,
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.grey,
                                 ),
-                                Text(
-                                  formattedDate,
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: Colors.grey,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            subtitle: Text(event.description,
-                                style: TextStyle(color: Colors.grey)),
-                            onTap: () {},
+                              ),
+                            ],
                           ),
-                        );
-                      },
-                    ),
-                  );
-                } else {
-                  return Center(child: Text('No events available'));
-                }
+                          subtitle: siteName != null
+                              ? Text(siteName,
+                                  style: TextStyle(color: Colors.grey))
+                              : null,
+                          onTap: () {},
+                        ),
+                      );
+                    },
+                  ),
+                );
               },
             ),
           ),

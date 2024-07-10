@@ -3,16 +3,26 @@ import 'package:guard_client/services/auth_service.dart';
 
 import '../models/event_model.dart';
 import '../services/api_client.dart';
+import '../utils/util.dart';
 
 class EventRepository {
   final ApiClient apiClient;
 
   EventRepository({required this.apiClient});
 
-  Future<List<EventModel>> fetchEvents(int id) async {
+  Future<List<EventModel>> fetchEvents(int id,
+      {int? pageNum, DateTime? startDate, DateTime? endDate}) async {
     try {
-      final response =
-          await apiClient.get('/events/?siteId=$id&pageNum=0&pageSize=10');
+      final startDateStr =
+          startDate != null ? Utils.formatDateToString(startDate) : null;
+      final endDateStr =
+          endDate != null ? Utils.formatDateToString(endDate) : null;
+
+      final response = (startDateStr != null && endDateStr != null)
+          ? await apiClient.get(
+              '/events/?siteId=$id&pageNum=${(pageNum! / 10).floor()}&pageSize=10&startDate=$startDateStr&endDate=$endDateStr')
+          : await apiClient.get('/events/?siteId=$id&pageNum=0&pageSize=10');
+
       List<EventModel> events = (response.data['data'] as List)
           .map((event) => EventModel.fromJson(event))
           .toList();

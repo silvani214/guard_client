@@ -41,53 +41,53 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyBL_w-efhwLmVqkbvfkcXBcbWxh0LXhNIk',
-    appId: '1:536701431820:web:4cce17070d0436044b7e29',
-    messagingSenderId: '536701431820',
-    projectId: 'guardstudio-f3127',
-    authDomain: 'guardstudio-f3127.firebaseapp.com',
-    databaseURL: 'https://guardstudio-f3127-default-rtdb.firebaseio.com',
-    storageBucket: 'guardstudio-f3127.appspot.com',
-    measurementId: 'G-GVDXSYVVWP',
+    apiKey: 'AIzaSyDhXxfl6xH6LiHbesIZPjvsTNNTA6G-hMo',
+    appId: '1:662945451244:web:6d3ba3ca60041f2c96e9c9',
+    messagingSenderId: '662945451244',
+    projectId: 'security-guard-691ff',
+    authDomain: 'security-guard-691ff.firebaseapp.com',
+    databaseURL: 'https://security-guard-691ff-default-rtdb.firebaseio.com',
+    storageBucket: 'security-guard-691ff.appspot.com',
+    measurementId: 'G-36TEGDTF2K',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyA4o29vXWRrPAF8PHdrulfPFwRydtmifyA',
-    appId: '1:536701431820:android:21a384f003ed3a4c4b7e29',
-    messagingSenderId: '536701431820',
-    projectId: 'guardstudio-f3127',
-    databaseURL: 'https://guardstudio-f3127-default-rtdb.firebaseio.com',
-    storageBucket: 'guardstudio-f3127.appspot.com',
+    apiKey: 'AIzaSyANJoLg__fwpJJTSENv8EhAdVKjdATa-Mk',
+    appId: '1:662945451244:android:0a2df224fe4de53596e9c9',
+    messagingSenderId: '662945451244',
+    projectId: 'security-guard-691ff',
+    databaseURL: 'https://security-guard-691ff-default-rtdb.firebaseio.com',
+    storageBucket: 'security-guard-691ff.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyAC9E2xoxN5jveqmyq-tB8HkMXhI7uaps0',
-    appId: '1:536701431820:ios:b5edb432f948fdc04b7e29',
-    messagingSenderId: '536701431820',
-    projectId: 'guardstudio-f3127',
-    databaseURL: 'https://guardstudio-f3127-default-rtdb.firebaseio.com',
-    storageBucket: 'guardstudio-f3127.appspot.com',
+    apiKey: 'AIzaSyDrbl3eXpOltdkCriOHIsgXGFhoFNwQcj8',
+    appId: '1:662945451244:ios:278bb194a5f609e896e9c9',
+    messagingSenderId: '662945451244',
+    projectId: 'security-guard-691ff',
+    databaseURL: 'https://security-guard-691ff-default-rtdb.firebaseio.com',
+    storageBucket: 'security-guard-691ff.appspot.com',
     iosBundleId: 'com.example.guardClient',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyAC9E2xoxN5jveqmyq-tB8HkMXhI7uaps0',
-    appId: '1:536701431820:ios:b5edb432f948fdc04b7e29',
-    messagingSenderId: '536701431820',
-    projectId: 'guardstudio-f3127',
-    databaseURL: 'https://guardstudio-f3127-default-rtdb.firebaseio.com',
-    storageBucket: 'guardstudio-f3127.appspot.com',
+    apiKey: 'AIzaSyDrbl3eXpOltdkCriOHIsgXGFhoFNwQcj8',
+    appId: '1:662945451244:ios:278bb194a5f609e896e9c9',
+    messagingSenderId: '662945451244',
+    projectId: 'security-guard-691ff',
+    databaseURL: 'https://security-guard-691ff-default-rtdb.firebaseio.com',
+    storageBucket: 'security-guard-691ff.appspot.com',
     iosBundleId: 'com.example.guardClient',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
-    apiKey: 'AIzaSyBL_w-efhwLmVqkbvfkcXBcbWxh0LXhNIk',
-    appId: '1:536701431820:web:53d8d1250907a6434b7e29',
-    messagingSenderId: '536701431820',
-    projectId: 'guardstudio-f3127',
-    authDomain: 'guardstudio-f3127.firebaseapp.com',
-    databaseURL: 'https://guardstudio-f3127-default-rtdb.firebaseio.com',
-    storageBucket: 'guardstudio-f3127.appspot.com',
-    measurementId: 'G-FLX4FDH6W5',
+    apiKey: 'AIzaSyDhXxfl6xH6LiHbesIZPjvsTNNTA6G-hMo',
+    appId: '1:662945451244:web:01adfa6bb952f46b96e9c9',
+    messagingSenderId: '662945451244',
+    projectId: 'security-guard-691ff',
+    authDomain: 'security-guard-691ff.firebaseapp.com',
+    databaseURL: 'https://security-guard-691ff-default-rtdb.firebaseio.com',
+    storageBucket: 'security-guard-691ff.appspot.com',
+    measurementId: 'G-32KGQQGJ9K',
   );
 }

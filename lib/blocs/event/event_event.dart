@@ -9,17 +9,28 @@ abstract class EventEvent extends Equatable {
 
 class FetchEvents extends EventEvent {
   final int id;
+  final int? pageNum;
+  final DateTime? startDate;
+  final DateTime? endDate;
+  final Completer<List<EventModel>>? completer;
 
-  FetchEvents({required this.id});
+  FetchEvents(
+      {required this.id,
+      this.pageNum,
+      this.startDate,
+      this.endDate,
+      this.completer});
 
   @override
-  List<Object?> get props => [id];
+  List<Object?> get props => [id, pageNum, startDate, endDate];
 }
 
 class RefreshEvents extends EventEvent {
   final int id;
+  final DateTime? startDate;
+  final DateTime? endDate;
 
-  RefreshEvents({required this.id});
+  RefreshEvents({required this.id, this.startDate, this.endDate});
 
   @override
   List<Object?> get props => [id];

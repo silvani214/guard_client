@@ -2,6 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import '../../models/event_model.dart';
 import '../../services/event_service.dart';
+import 'dart:async';
 
 part 'event_event.dart';
 part 'event_state.dart';
@@ -20,8 +21,10 @@ class EventBloc extends Bloc<EventEvent, EventState> {
       FetchEvents event, Emitter<EventState> emit) async {
     emit(EventLoading());
     try {
-      final events = await eventService.getAllEvents(event.id);
+      final events = await eventService.getAllEvents(
+          event.id, event.pageNum, event.startDate, event.endDate);
       _cachedEventList = events;
+      event.completer?.complete(events);
       emit(EventListLoaded(events: events));
     } catch (e) {
       emit(EventError(message: e.toString()));
@@ -32,7 +35,8 @@ class EventBloc extends Bloc<EventEvent, EventState> {
       RefreshEvents event, Emitter<EventState> emit) async {
     emit(EventLoading());
     try {
-      final events = await eventService.getAllEvents(event.id);
+      final events = await eventService.getAllEvents(
+          event.id, 0, event.startDate, event.endDate);
       _cachedEventList = events;
       emit(EventListLoaded(events: events));
     } catch (e) {

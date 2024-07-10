@@ -6,9 +6,11 @@ class EventService {
 
   EventService({required this.eventRepository});
 
-  Future<List<EventModel>> getAllEvents(int id) async {
+  Future<List<EventModel>> getAllEvents(
+      int id, int? pageNum, DateTime? startDate, DateTime? endDate) async {
     try {
-      return await eventRepository.fetchEvents(id);
+      return await eventRepository.fetchEvents(id,
+          pageNum: pageNum, startDate: startDate, endDate: endDate);
     } catch (e) {
       throw Exception('Failed to fetch events');
     }

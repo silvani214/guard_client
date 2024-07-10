@@ -19,20 +19,15 @@ class SiteBloc extends Bloc<SiteEvent, SiteState> {
   }
 
   Future<void> _onFetchSites(FetchSites event, Emitter<SiteState> emit) async {
-    print('fetch sites');
     if (_cachedSiteList != null) {
-      print('sites loaded');
-      print(_cachedSiteList);
       emit(SiteListLoaded(sites: _cachedSiteList!));
     } else {
-      print('sites loading');
       emit(SiteLoading());
       try {
         final sites = await siteService.getAllSites();
         _cachedSiteList = sites;
         emit(SiteListLoaded(sites: sites));
       } catch (e) {
-        print('XXXXX');
         emit(SiteError(message: e.toString()));
       }
     }

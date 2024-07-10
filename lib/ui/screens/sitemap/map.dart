@@ -87,7 +87,6 @@ class _SiteMapScreenState extends State<SiteMapScreen> {
           .firstWhere((state) => state is SiteListLoaded),
       _mapControllerCompleter.future,
     ]).then((results) {
-      print('all are completed all are completed all are completed');
       final siteState = results[1] as SiteListLoaded;
       _centerMapAndAddHitPoints(siteState);
       _fetchLocation();
@@ -97,7 +96,6 @@ class _SiteMapScreenState extends State<SiteMapScreen> {
   }
 
   void _centerMapAndAddHitPoints(SiteListLoaded state) {
-    print('site list loading site list loading site list loading');
 
     var siteList = state.sites;
     LatLngBounds bounds;

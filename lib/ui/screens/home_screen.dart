@@ -26,7 +26,7 @@ const List<TabItem> items = [
   ),
   TabItem(
     icon: Icons.event_outlined,
-    title: 'Event',
+    title: 'Events',
   ),
   // TabItem(
   //   icon: Icons.report_outlined,

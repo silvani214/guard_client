@@ -7,6 +7,7 @@ import 'package:guard_client/blocs/site/site_bloc.dart';
 import 'package:guard_client/blocs/event/event_bloc.dart';
 import 'package:guard_client/ui/screens/sites/site_detail_screen.dart';
 import 'dart:async';
+import '../../../utils/util.dart';
 
 class DashboardScreen extends StatefulWidget {
   @override
@@ -20,7 +21,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   void initState() {
     super.initState();
     context.read<SiteBloc>().add(FetchSites());
-    context.read<EventBloc>().add(FetchEvents(id: 0));
+    context.read<EventBloc>().add(FetchEvents(id: 352));
     _startTimer();
   }
 
@@ -49,6 +50,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
   String getCurrentMonthAndYear() {
     DateTime now = DateTime.now();
     return DateFormat('MMMM yyyy').format(now);
+  }
+
+  String _truncateDescription(String description) {
+    const maxLength = 24; // Adjust the max length as needed
+    if (description.length > maxLength) {
+      return '${description.substring(0, maxLength)}...';
+    }
+    return description;
   }
 
   @override
@@ -245,35 +254,66 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           } else if (state is SiteError) {
                             return Center(child: Text('Failed to load events'));
                           } else if (state is SiteListLoaded) {
-                            // Fetch events for each site
                             return Scrollbar(
                               child: ListView.builder(
                                 shrinkWrap: true,
                                 itemCount: state.sites.length,
                                 itemBuilder: (context, index) {
+                                  final site = state.sites[index];
                                   return BlocBuilder<EventBloc, EventState>(
                                     builder: (context, eventState) {
                                       if (eventState is EventListLoaded) {
+                                        final siteEvents = eventState.events
+                                            .where((event) =>
+                                                event.siteId == site.id)
+                                            .toList();
                                         return Column(
                                           crossAxisAlignment:
                                               CrossAxisAlignment.start,
-                                          children: eventState.events.map(
+                                          children: siteEvents.map(
                                             (event) {
+                                              final formattedDate =
+                                                  DateFormat('yyyy-MM-dd')
+                                                      .format(event.timestamp);
                                               return Container(
-                                                margin:
-                                                    EdgeInsets.only(bottom: 8),
-                                                child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    ListTile(
-                                                      title: Text(
-                                                          event.description),
-                                                      onTap: () {
-                                                        // Navigate to event details if needed
-                                                      },
+                                                decoration: BoxDecoration(
+                                                  border: Border(
+                                                    bottom: BorderSide(
+                                                      width: 0.5,
+                                                      color: Color.fromARGB(
+                                                          100, 200, 200, 200),
                                                     ),
-                                                  ],
+                                                  ),
+                                                ),
+                                                child: ListTile(
+                                                  leading:
+                                                      null, // Add the initials icon here
+                                                  title: Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
+                                                    children: [
+                                                      Expanded(
+                                                        child: Text(
+                                                            event.description),
+                                                      ),
+                                                      Text(
+                                                        formattedDate,
+                                                        style: TextStyle(
+                                                          fontSize: 12,
+                                                          color: Colors.grey,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  subtitle: Text(
+                                                    site.name,
+                                                    style: TextStyle(
+                                                        color: Colors.grey),
+                                                  ),
+                                                  onTap: () {
+                                                    // Navigate to event details if needed
+                                                  },
                                                 ),
                                               );
                                             },
