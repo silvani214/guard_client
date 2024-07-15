@@ -4,34 +4,36 @@ import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:intl/intl.dart';
 import 'package:custom_date_range_picker/custom_date_range_picker.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../../../blocs/site/site_bloc.dart';
-import '../../../models/visitor_model.dart';
-import '../../../repositories/visitor_repository.dart';
+import '../../../models/photo_model.dart';
+import '../../../repositories/photo_repository.dart';
 import '../../../models/site_model.dart';
 import '../../../models/location_model.dart';
 import '../../../utils/route_observer.dart';
-import 'package:get_it/get_it.dart';
 import 'dart:async';
-import 'visitor_detail_screen.dart';
+import 'package:get_it/get_it.dart';
+import '../../../utils/constants.dart';
+import 'site_photo_view_detail.dart';
 
-class VisitorScreen extends StatefulWidget {
-  final int? siteId; // Allow siteId to be nullable
+class PhotoListScreen extends StatefulWidget {
+  final int? siteId;
 
-  VisitorScreen({this.siteId});
+  PhotoListScreen({this.siteId});
 
   @override
-  _VisitorScreenState createState() => _VisitorScreenState();
+  _PhotoListScreenState createState() => _PhotoListScreenState();
 }
 
 final getIt = GetIt.instance;
 
-class _VisitorScreenState extends State<VisitorScreen> with RouteAware {
+class _PhotoListScreenState extends State<PhotoListScreen> with RouteAware {
   int? _selectedSiteId;
   DateTime? startDate = DateTime.now().subtract(Duration(days: 30));
   DateTime? endDate = DateTime.now();
-  final PagingController<int, VisitorModel> _pagingController =
+  final PagingController<int, PhotoModel> _pagingController =
       PagingController(firstPageKey: 0);
-  var visitorRepository = getIt<VisitorRepository>();
+  var photoRepository = getIt<PhotoRepository>();
 
   @override
   void initState() {
@@ -46,27 +48,23 @@ class _VisitorScreenState extends State<VisitorScreen> with RouteAware {
 
   Future<void> _fetchPage(int pageKey) async {
     try {
-      final newVisitors = await _fetchVisitors(pageKey);
+      final newPhotos = await _fetchPhotos(pageKey);
 
-      final isLastPage = newVisitors.length < 10;
+      final isLastPage = newPhotos.length < 10;
       if (isLastPage) {
-        _pagingController.appendLastPage(newVisitors);
+        _pagingController.appendLastPage(newPhotos);
       } else {
-        final nextPageKey = pageKey + newVisitors.length;
-        _pagingController.appendPage(newVisitors, nextPageKey);
+        final nextPageKey = pageKey + newPhotos.length;
+        _pagingController.appendPage(newPhotos, nextPageKey);
       }
     } catch (error) {
       _pagingController.error = error;
     }
   }
 
-  Future<List<VisitorModel>> _fetchVisitors(int pageKey) async {
-    return visitorRepository.fetchVisitors(
-      _selectedSiteId ?? widget.siteId ?? 0,
-      pageNum: pageKey,
-      startDate: startDate,
-      endDate: endDate,
-    );
+  Future<List<PhotoModel>> _fetchPhotos(int pageKey) async {
+    return photoRepository.fetchPhotos(_selectedSiteId ?? widget.siteId ?? 0,
+        pageNum: pageKey, startDate: startDate, endDate: endDate);
   }
 
   void _applyFilters() {
@@ -93,7 +91,7 @@ class _VisitorScreenState extends State<VisitorScreen> with RouteAware {
 
   Widget title() {
     return Text(
-      'Visitor List',
+      'Photo List',
       style: TextStyle(
         color: Theme.of(context).primaryColor,
         fontFamily: 'Roboto',
@@ -234,63 +232,84 @@ class _VisitorScreenState extends State<VisitorScreen> with RouteAware {
           Expanded(
             child: BlocBuilder<SiteBloc, SiteState>(
               builder: (context, state) {
-                return PagedListView<int, VisitorModel>(
+                return PagedGridView<int, PhotoModel>(
                   pagingController: _pagingController,
-                  builderDelegate: PagedChildBuilderDelegate<VisitorModel>(
-                    itemBuilder: (context, visitor, index) {
-                      final formattedDate = DateFormat('yyyy-MM-dd')
-                          .format(visitor.timestamp!); // Format the timestamp
-                      String? siteName;
-                      if (state is SiteListLoaded) {
-                        siteName = state.sites
-                            .firstWhere((site) => site.id == visitor.site.id,
-                                orElse: () => SiteModel(
-                                    id: 0,
-                                    name: 'Unknown Site',
-                                    description: '',
-                                    location: LocationModel(
-                                        latitude: 0.0, longitude: 0.0)))
-                            .name;
-                      }
-                      return Container(
-                        decoration: BoxDecoration(
-                          border: Border(
-                            bottom: BorderSide(
-                              width: 0.5,
-                              color: Color.fromARGB(100, 200, 200, 200),
-                            ),
-                          ),
-                        ),
-                        child: ListTile(
-                          leading: Icon(Icons.person),
-                          title: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Expanded(
-                                child: Text(visitor.fullname),
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    mainAxisSpacing: 10,
+                    crossAxisSpacing: 10,
+                    childAspectRatio: 1,
+                  ),
+                  builderDelegate: PagedChildBuilderDelegate<PhotoModel>(
+                    itemBuilder: (context, photo, index) {
+                      final formattedDate = DateFormat('yyyy-MM-dd hh:mm')
+                          .format(photo.timestamp); // Format the timestamp
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => PhotoViewDetailScreen(
+                                photo: photo,
                               ),
-                              Text(
-                                formattedDate,
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.grey,
+                            ),
+                          );
+                        },
+                        child: Padding(
+                            padding: EdgeInsets.all(10),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(10),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                      color: Colors.grey.withOpacity(0.5),
+                                      width: 0),
+                                  borderRadius: BorderRadius.circular(8.0),
+                                ),
+                                child: Column(
+                                  children: [
+                                    Expanded(
+                                      child: CachedNetworkImage(
+                                        imageUrl:
+                                            '${AppConstants.baseUrl}/images/${photo.url}',
+                                        fit: BoxFit.cover,
+                                        width: double.infinity,
+                                        placeholder: (context, url) => Center(
+                                          child: CircularProgressIndicator(),
+                                        ),
+                                        errorWidget: (context, url, error) =>
+                                            Icon(Icons.error),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(9.0),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Center(
+                                              child: Text(
+                                            formattedDate,
+                                            style: TextStyle(
+                                              fontSize: 12,
+                                              color: Colors.grey,
+                                            ),
+                                          )),
+                                          Center(
+                                              child: Text(
+                                            '${photo.guard.firstname} ${photo.guard.lastname}',
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          )),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
-                            ],
-                          ),
-                          subtitle: siteName != null
-                              ? Text(siteName,
-                                  style: TextStyle(color: Colors.grey))
-                              : null,
-                          onTap: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    VisitorDetailScreen(visitor: visitor),
-                              ),
-                            );
-                          },
-                        ),
+                            )),
                       );
                     },
                   ),

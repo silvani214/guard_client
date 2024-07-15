@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:awesome_bottom_bar/awesome_bottom_bar.dart';
 import 'package:guard_client/ui/screens/event/event_screen.dart';
+import 'package:guard_client/ui/screens/profile/profile_screen.dart';
 import 'package:guard_client/ui/screens/report/report_screen.dart';
 import 'package:guard_client/ui/screens/sitemap/map.dart';
 import './chat/chat_room.dart';
@@ -25,8 +26,8 @@ const List<TabItem> items = [
     title: 'Chat',
   ),
   TabItem(
-    icon: Icons.event_outlined,
-    title: 'Events',
+    icon: Icons.account_box_outlined,
+    title: 'Profile',
   ),
   // TabItem(
   //   icon: Icons.report_outlined,
@@ -40,12 +41,7 @@ class _HomeScreenState extends State<HomeScreen> {
     DashboardScreen(),
     SiteMapScreen(),
     ChatRoom(),
-    EventScreen(
-      siteId: 0,
-    ),
-    ReportScreen(
-      siteId: 0,
-    ),
+    ProfileScreen(),
   ];
 
   void _onItemTapped(int index) {

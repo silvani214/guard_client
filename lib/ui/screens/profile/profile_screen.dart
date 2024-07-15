@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../../models/user_model.dart';
 import 'package:get_it/get_it.dart';
+import '../../../models/user_model.dart';
 import 'package:guard_client/services/auth_service.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -21,6 +21,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color.fromARGB(255, 245, 247, 250),
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(40.0), // Set the custom height
+        child: AppBar(
+          surfaceTintColor: Theme.of(context).primaryColor,
+          backgroundColor: Color.fromARGB(255, 245, 247, 250),
+          elevation: 0, // Remove shadow
+          title: Padding(
+              padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
+              child: Center(
+                  child: Text(
+                'Profile',
+                style: TextStyle(
+                  color: Theme.of(context).primaryColor,
+                  fontFamily: 'Roboto',
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ))),
+        ),
+      ),
       body: FutureBuilder<UserModel?>(
         future: userFuture,
         builder: (context, snapshot) {
@@ -39,11 +60,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
           } else {
             UserModel user = snapshot.data!;
             return SingleChildScrollView(
-              child: Column(
-                children: [
-                  _buildProfileHeader(context, user),
-                  _buildProfileDetails(context, user),
-                ],
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildInfoSection(
+                      context,
+                      label: 'First Name',
+                      content: user.firstName ?? 'N/A',
+                    ),
+                    _buildInfoSection(
+                      context,
+                      label: 'Last Name',
+                      content: user.lastName ?? 'N/A',
+                    ),
+                    _buildInfoSection(
+                      context,
+                      label: 'Email',
+                      content: user.email,
+                    ),
+                    // Add more details as needed
+                  ],
+                ),
               ),
             );
           }
@@ -52,121 +91,33 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildProfileHeader(BuildContext context, UserModel user) {
+  Widget _buildInfoSection(BuildContext context,
+      {required String label, required String content}) {
     return Container(
-      padding: const EdgeInsets.all(16.0),
+      width: double.infinity,
+      margin: EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Colors.blueAccent, Colors.lightBlueAccent],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
       ),
+      padding: EdgeInsets.all(16),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          CircleAvatar(
-            radius: 50,
-            backgroundColor: Colors.white,
-            child: Text(
-              user.firstName != null
-                  ? user.firstName![0] + user.lastName![0]
-                  : "",
-              style: TextStyle(
-                fontSize: 40,
-                color: Colors.blueAccent,
-              ),
-            ),
-          ),
-          SizedBox(height: 16),
           Text(
-            user.firstName != null
-                ? '${user.firstName} ${user.firstName}'
-                : "N/A",
+            label,
             style: TextStyle(
-              fontSize: 24,
-              color: Colors.white,
+              fontSize: 18,
               fontWeight: FontWeight.bold,
+              color: Theme.of(context).primaryColor,
             ),
           ),
           SizedBox(height: 8),
           Text(
-            user.email,
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.white70,
-            ),
+            content,
+            style: TextStyle(fontSize: 16),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildProfileDetails(BuildContext context, UserModel user) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        children: [
-          _buildDetailCard(
-            icon: Icons.person,
-            title: 'First Name',
-            content: user.firstName ?? 'N/A',
-          ),
-          SizedBox(height: 16),
-          _buildDetailCard(
-            icon: Icons.person_outline,
-            title: 'Last Name',
-            content: user.lastName ?? 'N/A',
-          ),
-          SizedBox(height: 16),
-          _buildDetailCard(
-            icon: Icons.email,
-            title: 'Email',
-            content: user.email,
-          ),
-          SizedBox(height: 16),
-          // Add more details as needed
-        ],
-      ),
-    );
-  }
-
-  Widget _buildDetailCard({
-    required IconData icon,
-    required String title,
-    required String content,
-  }) {
-    return Card(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10),
-      ),
-      elevation: 3,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Row(
-          children: [
-            Icon(icon, size: 40, color: Colors.blueAccent),
-            SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                  SizedBox(height: 8),
-                  Text(
-                    content,
-                    style: TextStyle(fontSize: 16),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }

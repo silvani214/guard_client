@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:guard_client/models/site_model.dart';
 import 'package:guard_client/ui/screens/event/event_screen.dart';
+import 'package:guard_client/ui/screens/sites/site_photo_screen.dart';
 import 'package:guard_client/ui/screens/sites/site_visitor_screen.dart';
 import 'package:guard_client/ui/screens/sites/site_report_screen.dart';
 
@@ -84,16 +85,34 @@ class SiteDetailScreen extends StatelessWidget {
                     );
                   },
                 ),
-                SizedBox(width: 24),
+              ],
+            ),
+            SizedBox(height: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
                 _buildVerticalButton(
                   context,
-                  icon: Icons.event,
-                  label: 'Event',
+                  icon: Icons.local_activity,
+                  label: 'Activity',
                   onPressed: () {
                     Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (context) =>
                             EventScreen(siteId: site.id, isDetail: true),
+                      ),
+                    );
+                  },
+                ),
+                SizedBox(width: 24),
+                _buildVerticalButton(
+                  context,
+                  icon: Icons.photo_size_select_actual,
+                  label: 'Photo Lib',
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => PhotoListScreen(siteId: site.id),
                       ),
                     );
                   },

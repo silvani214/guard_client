@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../models/report_model.dart';
+import '../../../utils/constants.dart';
+import './fullscreen_photo_view.dart'; // Import the full screen photo view
 
 class ReportDetailScreen extends StatelessWidget {
   final ReportModel report;
@@ -36,7 +38,7 @@ class ReportDetailScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildPhotoList(report.photoList),
+            _buildPhotoList(context, report.photoList),
             SizedBox(height: 16),
             _buildInfoSection(
               context,
@@ -54,7 +56,7 @@ class ReportDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildPhotoList(List<Photo> photos) {
+  Widget _buildPhotoList(BuildContext context, List<Photo> photos) {
     return Container(
       height: 200,
       child: ListView.builder(
@@ -64,11 +66,27 @@ class ReportDetailScreen extends StatelessWidget {
           final photo = photos[index];
           return Padding(
             padding: const EdgeInsets.all(8.0),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: Image.network(
-                'http://35.183.88.228:8080/api/images/${photo.url}',
-                fit: BoxFit.cover,
+            child: GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => FullScreenPhotoView(
+                      photos: photos,
+                      initialIndex: index,
+                    ),
+                  ),
+                );
+              },
+              child: Hero(
+                tag: photo.url,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: Image.network(
+                    '${AppConstants.baseUrl}/images/${photo.url}',
+                    fit: BoxFit.cover,
+                  ),
+                ),
               ),
             ),
           );

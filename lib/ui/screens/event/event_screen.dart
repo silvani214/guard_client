@@ -4,6 +4,7 @@ import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:intl/intl.dart';
 import 'package:custom_date_range_picker/custom_date_range_picker.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
+import 'package:flutter_svg/flutter_svg.dart'; // Add this import to use SVG icons
 import '../../../blocs/event/event_bloc.dart';
 import '../../../blocs/site/site_bloc.dart';
 import '../../widgets/initial_icon.dart';
@@ -112,6 +113,85 @@ class _EventScreenState extends State<EventScreen> with RouteAware {
 
   String _formatDateRange(DateTime start, DateTime end) {
     return '${DateFormat('dd/MM/yyyy').format(start)} - ${DateFormat('dd/MM/yyyy').format(end)}';
+  }
+
+  IconData _getIconDataForAction(String action) {
+    switch (action.toLowerCase()) {
+      case 'fire':
+        return Icons.local_fire_department;
+      case 'flood':
+        return Icons.water_damage;
+      case 'blackout':
+        return Icons.power_off;
+      case 'water leak':
+        return Icons.water;
+      case 'visitor':
+        return Icons.person;
+      case 'trespasser':
+        return Icons.person_off;
+      case 'fire alarm':
+        return Icons.alarm;
+      case 'squatter':
+        return Icons.cabin;
+      case 'drug paraphernalia':
+        return Icons.medical_services;
+      case 'vagrant':
+        return Icons.person_search;
+      case 'police':
+        return Icons.local_police;
+      case 'door not secure':
+        return Icons.lock_open;
+      case 'deceased':
+        return Icons.sentiment_very_dissatisfied;
+      case 'ems':
+        return Icons.local_hospital;
+      case 'suspicious vehicle':
+        return Icons.directions_car;
+      case 'dangerous chemical':
+        // return Icons.biohazard;
+        return Icons.warning;
+      default:
+        return Icons.info_outline;
+    }
+  }
+
+  Color _getColorForAction(String action) {
+    switch (action.toLowerCase()) {
+      case 'fire':
+        return Colors.red;
+      case 'flood':
+        return Colors.blue;
+      case 'blackout':
+        return Colors.grey;
+      case 'water leak':
+        return Colors.lightBlue;
+      case 'visitor':
+        return Colors.green;
+      case 'trespasser':
+        return Colors.orange;
+      case 'fire alarm':
+        return Colors.redAccent;
+      case 'squatter':
+        return Colors.brown;
+      case 'drug paraphernalia':
+        return Colors.purple;
+      case 'vagrant':
+        return Colors.amber;
+      case 'police':
+        return Colors.blueAccent;
+      case 'door not secure':
+        return Colors.orangeAccent;
+      case 'deceased':
+        return Colors.black;
+      case 'ems':
+        return Colors.red;
+      case 'suspicious vehicle':
+        return Colors.indigo;
+      case 'dangerous chemical':
+        return Colors.yellow;
+      default:
+        return Colors.blueGrey;
+    }
   }
 
   @override
@@ -262,6 +342,8 @@ class _EventScreenState extends State<EventScreen> with RouteAware {
                                         latitude: 0.0, longitude: 0.0)))
                             .name;
                       }
+                      final iconData = _getIconDataForAction(event.action);
+                      final iconColor = _getColorForAction(event.action);
                       return Container(
                         decoration: BoxDecoration(
                           border: Border(
@@ -272,7 +354,8 @@ class _EventScreenState extends State<EventScreen> with RouteAware {
                           ),
                         ),
                         child: ListTile(
-                          leading: null, // Add the initials icon here
+                          leading: Icon(iconData,
+                              color: iconColor), // Add the initials icon here
                           title: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [

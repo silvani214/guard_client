@@ -8,6 +8,9 @@ import 'package:guard_client/blocs/event/event_bloc.dart';
 import 'package:guard_client/ui/screens/sites/site_detail_screen.dart';
 import 'dart:async';
 import '../../../utils/util.dart';
+import '../../../models/event_model.dart';
+import '../../../models/site_model.dart';
+import '../../../models/location_model.dart';
 
 class DashboardScreen extends StatefulWidget {
   @override
@@ -60,6 +63,84 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return description;
   }
 
+  IconData _getIconDataForAction(String action) {
+    switch (action.toLowerCase()) {
+      case 'fire':
+        return Icons.local_fire_department;
+      case 'flood':
+        return Icons.water_damage;
+      case 'blackout':
+        return Icons.power_off;
+      case 'water leak':
+        return Icons.water;
+      case 'visitor':
+        return Icons.person;
+      case 'trespasser':
+        return Icons.person_off;
+      case 'fire alarm':
+        return Icons.alarm;
+      case 'squatter':
+        return Icons.cabin;
+      case 'drug paraphernalia':
+        return Icons.medical_services;
+      case 'vagrant':
+        return Icons.person_search;
+      case 'police':
+        return Icons.local_police;
+      case 'door not secure':
+        return Icons.lock_open;
+      case 'deceased':
+        return Icons.sentiment_very_dissatisfied;
+      case 'ems':
+        return Icons.local_hospital;
+      case 'suspicious vehicle':
+        return Icons.directions_car;
+      case 'dangerous chemical':
+        return Icons.warning;
+      default:
+        return Icons.info_outline;
+    }
+  }
+
+  Color _getColorForAction(String action) {
+    switch (action.toLowerCase()) {
+      case 'fire':
+        return Colors.red;
+      case 'flood':
+        return Colors.blue;
+      case 'blackout':
+        return Colors.grey;
+      case 'water leak':
+        return Colors.lightBlue;
+      case 'visitor':
+        return Colors.green;
+      case 'trespasser':
+        return Colors.orange;
+      case 'fire alarm':
+        return Colors.redAccent;
+      case 'squatter':
+        return Colors.brown;
+      case 'drug paraphernalia':
+        return Colors.purple;
+      case 'vagrant':
+        return Colors.amber;
+      case 'police':
+        return Colors.blueAccent;
+      case 'door not secure':
+        return Colors.orangeAccent;
+      case 'deceased':
+        return Colors.black;
+      case 'ems':
+        return Colors.red;
+      case 'suspicious vehicle':
+        return Colors.indigo;
+      case 'dangerous chemical':
+        return Colors.yellow;
+      default:
+        return Colors.blueGrey;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -68,9 +149,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
         preferredSize: Size.fromHeight(40.0), // Set the custom height
         child: AppBar(
           title: Padding(
-              padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
-              child: Center(
-                  child: Text(
+            padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
+            child: Center(
+              child: Text(
                 'Dashboard',
                 style: TextStyle(
                   color: Theme.of(context).primaryColor,
@@ -78,7 +159,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),
-              ))),
+              ),
+            ),
+          ),
           surfaceTintColor: Color.fromARGB(255, 245, 247, 250),
           backgroundColor: Color.fromARGB(255, 245, 247, 250),
           elevation: 0, // Remove shadow
@@ -155,17 +238,20 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   Text(
                     'Sites',
                     style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).primaryColor),
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).primaryColor,
+                    ),
                   ),
                   SizedBox(height: 16),
                   BlocBuilder<SiteBloc, SiteState>(
                     builder: (context, state) {
                       if (state is SiteLoading) {
                         return Center(
-                            child: CircularProgressIndicator(
-                                color: Theme.of(context).primaryColor));
+                          child: CircularProgressIndicator(
+                            color: Theme.of(context).primaryColor,
+                          ),
+                        );
                       } else if (state is SiteError) {
                         return Center(child: Text('Failed to load sites'));
                       } else if (state is SiteListLoaded) {
@@ -239,89 +325,93 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     Text(
                       'Recent Activity',
                       style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).primaryColor),
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).primaryColor,
+                      ),
                     ),
                     SizedBox(height: 16),
                     Expanded(
-                      child: BlocBuilder<SiteBloc, SiteState>(
-                        builder: (context, state) {
-                          if (state is SiteLoading) {
+                      child: BlocBuilder<EventBloc, EventState>(
+                        builder: (context, eventState) {
+                          if (eventState is EventLoading) {
                             return Center(
-                                child: CircularProgressIndicator(
-                                    color: Theme.of(context).primaryColor));
-                          } else if (state is SiteError) {
+                              child: CircularProgressIndicator(
+                                color: Theme.of(context).primaryColor,
+                              ),
+                            );
+                          } else if (eventState is EventError) {
                             return Center(child: Text('Failed to load events'));
-                          } else if (state is SiteListLoaded) {
+                          } else if (eventState is EventListLoaded) {
                             return Scrollbar(
                               child: ListView.builder(
                                 shrinkWrap: true,
-                                itemCount: state.sites.length,
+                                itemCount: eventState.events.length,
                                 itemBuilder: (context, index) {
-                                  final site = state.sites[index];
-                                  return BlocBuilder<EventBloc, EventState>(
-                                    builder: (context, eventState) {
-                                      if (eventState is EventListLoaded) {
-                                        final siteEvents = eventState.events
-                                            .where((event) =>
-                                                event.siteId == site.id)
-                                            .toList();
-                                        return Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: siteEvents.map(
-                                            (event) {
-                                              final formattedDate =
-                                                  DateFormat('yyyy-MM-dd')
-                                                      .format(event.timestamp);
-                                              return Container(
-                                                decoration: BoxDecoration(
-                                                  border: Border(
-                                                    bottom: BorderSide(
-                                                      width: 0.5,
-                                                      color: Color.fromARGB(
-                                                          100, 200, 200, 200),
-                                                    ),
-                                                  ),
-                                                ),
-                                                child: ListTile(
-                                                  leading:
-                                                      null, // Add the initials icon here
-                                                  title: Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .spaceBetween,
-                                                    children: [
-                                                      Expanded(
-                                                        child: Text(
-                                                            event.description),
-                                                      ),
-                                                      Text(
-                                                        formattedDate,
-                                                        style: TextStyle(
-                                                          fontSize: 12,
-                                                          color: Colors.grey,
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  subtitle: Text(
-                                                    site.name,
-                                                    style: TextStyle(
-                                                        color: Colors.grey),
-                                                  ),
-                                                  onTap: () {
-                                                    // Navigate to event details if needed
-                                                  },
-                                                ),
-                                              );
-                                            },
-                                          ).toList(),
-                                        );
-                                      }
-                                      return SizedBox.shrink();
-                                    },
+                                  final event = eventState.events[index];
+                                  final formattedDate = DateFormat('yyyy-MM-dd')
+                                      .format(event.timestamp);
+                                  final iconData =
+                                      _getIconDataForAction(event.action);
+                                  final iconColor =
+                                      _getColorForAction(event.action);
+                                  return Container(
+                                    decoration: BoxDecoration(
+                                      border: Border(
+                                        bottom: BorderSide(
+                                          width: 0.5,
+                                          color: Color.fromARGB(
+                                              100, 200, 200, 200),
+                                        ),
+                                      ),
+                                    ),
+                                    child: ListTile(
+                                      leading: Icon(iconData,
+                                          color:
+                                              iconColor), // Add the initials icon here
+                                      title: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Expanded(
+                                            child: Text(event.description),
+                                          ),
+                                          Text(
+                                            formattedDate,
+                                            style: TextStyle(
+                                              fontSize: 12,
+                                              color: Colors.grey,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      subtitle:
+                                          BlocBuilder<SiteBloc, SiteState>(
+                                        builder: (context, siteState) {
+                                          if (siteState is SiteListLoaded) {
+                                            final siteName = siteState.sites
+                                                .firstWhere(
+                                                    (site) =>
+                                                        site.id == event.siteId,
+                                                    orElse: () => SiteModel(
+                                                        id: 0,
+                                                        name: 'Unknown Site',
+                                                        description: '',
+                                                        location: LocationModel(
+                                                            latitude: 0.0,
+                                                            longitude: 0.0)))
+                                                .name;
+                                            return Text(siteName,
+                                                style: TextStyle(
+                                                    color: Colors.grey));
+                                          }
+                                          return SizedBox.shrink();
+                                        },
+                                      ),
+                                      onTap: () {
+                                        // Navigate to event details if needed
+                                      },
+                                    ),
                                   );
                                 },
                               ),
