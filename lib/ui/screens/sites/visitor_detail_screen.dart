@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import '../../../models/visitor_model.dart';
 import '../../../utils/constants.dart';
 
@@ -36,6 +38,31 @@ class VisitorDetailScreen extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(16.0),
         children: [
+          Center(
+            child: CircleAvatar(
+              radius: 50,
+              backgroundColor: Colors.grey[300],
+              child: visitor.url != null
+                  ? CachedNetworkImage(
+                      imageUrl: '${AppConstants.baseUrl}/images/${visitor.url}',
+                      imageBuilder: (context, imageProvider) => CircleAvatar(
+                        radius: 50,
+                        backgroundImage: imageProvider,
+                      ),
+                      placeholder: (context, url) => CircleAvatar(
+                        radius: 50,
+                        backgroundColor: Colors.grey[300],
+                        child: SpinKitCircle(
+                          color: Theme.of(context).primaryColor,
+                          size: 50.0,
+                        ),
+                      ),
+                      errorWidget: (context, url, error) => Icon(Icons.error),
+                    )
+                  : Icon(Icons.person, size: 50, color: Colors.white),
+            ),
+          ),
+          SizedBox(height: 16),
           _buildInfoSection(
             context,
             label: 'Full Name',
@@ -66,19 +93,6 @@ class VisitorDetailScreen extends StatelessWidget {
             label: 'Site Address',
             content: visitor.site.address,
           ),
-          if (visitor.url != null)
-            _buildInfoSection(
-              context,
-              label: 'Photo',
-              content: '',
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: Image.network(
-                  '${AppConstants.baseUrl}/images/${visitor.url}',
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
         ],
       ),
     );
