@@ -13,6 +13,7 @@ import 'repositories/event_repository.dart';
 import 'repositories/visitor_repository.dart';
 import 'repositories/report_repository.dart';
 import 'repositories/photo_repository.dart';
+import 'repositories/schedule_repository.dart';
 import 'services/api_client.dart';
 import 'ui/screens/auth/signup_screen.dart';
 import 'ui/screens/home_screen.dart';
@@ -82,6 +83,8 @@ void setup() {
       ReportRepository(apiClient: getIt<ApiClient>()));
   getIt.registerSingleton<PhotoRepository>(
       PhotoRepository(apiClient: getIt<ApiClient>()));
+  getIt.registerSingleton<ScheduleRepository>(
+      ScheduleRepository(apiClient: getIt<ApiClient>()));
 }
 
 class MyApp extends StatelessWidget {

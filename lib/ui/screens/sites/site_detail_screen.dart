@@ -5,6 +5,7 @@ import 'package:guard_client/ui/screens/event/event_screen.dart';
 import 'package:guard_client/ui/screens/sites/site_photo_screen.dart';
 import 'package:guard_client/ui/screens/sites/site_visitor_screen.dart';
 import 'package:guard_client/ui/screens/sites/site_report_screen.dart';
+import './schedule_list.dart';
 
 class SiteDetailScreen extends StatelessWidget {
   final SiteModel site;
@@ -55,6 +56,34 @@ class SiteDetailScreen extends StatelessWidget {
               context,
               label: 'Address',
               content: site.address ?? 'No Address Available',
+              icon: Icons.map,
+              onIconPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => Scaffold(
+                      appBar: AppBar(
+                        title: Text('Map'),
+                        backgroundColor: Theme.of(context).primaryColor,
+                      ),
+                      body: GoogleMap(
+                        initialCameraPosition: CameraPosition(
+                          target: LatLng(
+                              site.location.latitude, site.location.longitude),
+                          zoom: 14.0,
+                        ),
+                        markers: {
+                          Marker(
+                            markerId: MarkerId(site.name),
+                            position: LatLng(site.location.latitude,
+                                site.location.longitude),
+                            infoWindow: InfoWindow(title: site.name),
+                          ),
+                        },
+                      ),
+                    ),
+                  ),
+                );
+              },
             ),
             SizedBox(height: 16),
             Row(
@@ -119,32 +148,9 @@ class SiteDetailScreen extends StatelessWidget {
                 ),
               ],
             ),
-            SizedBox(height: 16),
+            SizedBox(width: 24),
             Expanded(
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: GoogleMap(
-                    initialCameraPosition: CameraPosition(
-                      target: LatLng(
-                          site.location.latitude, site.location.longitude),
-                      zoom: 14.0,
-                    ),
-                    markers: {
-                      Marker(
-                        markerId: MarkerId(site.name),
-                        position: LatLng(
-                            site.location.latitude, site.location.longitude),
-                        infoWindow: InfoWindow(title: site.name),
-                      ),
-                    },
-                  ),
-                ),
-              ),
+              child: ScheduleList(siteId: site.id), // Add this line
             ),
           ],
         ),
@@ -153,7 +159,10 @@ class SiteDetailScreen extends StatelessWidget {
   }
 
   Widget _buildInfoSection(BuildContext context,
-      {required String label, required String content}) {
+      {required String label,
+      required String content,
+      IconData? icon,
+      VoidCallback? onIconPressed}) {
     return Container(
       width: double.infinity,
       margin: EdgeInsets.only(bottom: 16),
@@ -162,22 +171,33 @@ class SiteDetailScreen extends StatelessWidget {
         borderRadius: BorderRadius.circular(10),
       ),
       padding: EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
         children: [
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Theme.of(context).primaryColor,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).primaryColor,
+                  ),
+                ),
+                SizedBox(height: 8),
+                Text(
+                  content,
+                  style: TextStyle(fontSize: 16),
+                ),
+              ],
             ),
           ),
-          SizedBox(height: 8),
-          Text(
-            content,
-            style: TextStyle(fontSize: 16),
-          ),
+          if (icon != null)
+            IconButton(
+              icon: Icon(icon, color: Theme.of(context).primaryColor),
+              onPressed: onIconPressed,
+            ),
         ],
       ),
     );
