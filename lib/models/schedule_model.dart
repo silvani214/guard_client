@@ -6,7 +6,7 @@ class ScheduleModel {
   final int guardId;
   final int hours;
   final double frequency;
-  final String announces;
+  String announces;
 
   ScheduleModel({
     required this.text,

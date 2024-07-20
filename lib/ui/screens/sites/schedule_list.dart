@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
+import 'package:intl/intl.dart';
+import 'package:get_it/get_it.dart';
 import '../../../models/schedule_model.dart';
 import '../../../repositories/schedule_repository.dart';
-import 'package:get_it/get_it.dart';
-import 'package:intl/intl.dart';
 
 class ScheduleList extends StatefulWidget {
   final int siteId;
@@ -52,6 +52,83 @@ class _ScheduleListState extends State<ScheduleList> {
     );
   }
 
+  void _openEditDialog(ScheduleModel schedule) async {
+    final updatedAnnounce = await showDialog<String>(
+      context: context,
+      builder: (context) {
+        final TextEditingController announceController =
+            TextEditingController(text: schedule.announces);
+
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Container(
+            width: 300, // Set a fixed width for the dialog
+            padding: EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text('Announcement', style: TextStyle(fontSize: 18)),
+                  SizedBox(height: 18),
+                  TextField(
+                    controller: announceController,
+                    decoration: InputDecoration(
+                      labelText: 'Announcement',
+                    ),
+                    maxLines: 3,
+                  ),
+                  SizedBox(height: 10),
+                  Text('Name: ${schedule.text}'),
+                  Text(
+                      'Start Date: ${DateFormat('yyyy-MM-dd HH:mm').format(schedule.startDate)}'),
+                  Text(
+                      'End Date: ${DateFormat('yyyy-MM-dd HH:mm').format(schedule.endDate)}'),
+                  SizedBox(height: 20),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () =>
+                          Navigator.of(context).pop(announceController.text),
+                      child: Text('OK'),
+                      style: ElevatedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+
+    if (updatedAnnounce != null) {
+      schedule.announces = updatedAnnounce;
+      await _updateSchedule(schedule);
+    }
+  }
+
+  Future<void> _updateSchedule(ScheduleModel schedule) async {
+    try {
+      await scheduleRepository.updateSchedule(widget.siteId, [schedule]);
+      _pagingController.refresh();
+    } catch (error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to update announcement')),
+      );
+    }
+  }
+
   @override
   void dispose() {
     _pagingController.dispose();
@@ -81,6 +158,7 @@ class _ScheduleListState extends State<ScheduleList> {
               leading: Icon(Icons.schedule),
               title: Text(schedule.text),
               subtitle: Text('$startDate - $endDate'),
+              onTap: () => _openEditDialog(schedule),
             ),
           );
         },
