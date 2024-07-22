@@ -60,4 +60,8 @@ class ApiClient {
   Future<Response> get(String path) async {
     return _dio.get('${AppConstants.baseUrl}$path');
   }
+
+  Future<Response> put(String path, {dynamic data}) async {
+    return _dio.put('${AppConstants.baseUrl}$path', data: data);
+  }
 }

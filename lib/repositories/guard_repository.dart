@@ -9,12 +9,14 @@ class GuardRepository {
 
   Future<List<UserModel>> fetchGuards() async {
     try {
-      final response = await apiClient.get('/guards/?siteId=352');
+      final response = await apiClient.get('/users/?chat=true');
+
       List<UserModel> Guards = (response.data['data'] as List)
           .map((Guard) => UserModel.fromJson(Guard))
           .toList();
       return Guards;
     } catch (e) {
+      print(e);
       throw Exception('Failed to fetch Guard list');
     }
   }

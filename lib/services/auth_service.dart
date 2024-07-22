@@ -13,6 +13,8 @@ class AuthService {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(
         AppConstants.userDetailKey, jsonEncode(user.toJson()));
+    print('user detail saved');
+    print(user.toJson());
   }
 
   Future<UserModel?> getUserDetail() async {

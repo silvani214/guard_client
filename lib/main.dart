@@ -29,6 +29,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'ui/screens/sitemap/map.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_app_check/firebase_app_check.dart';
 import 'firebase_options.dart';
 import 'utils/app_theme.dart';
 import 'utils/route_observer.dart';
@@ -42,6 +43,12 @@ void main() async {
   setup();
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await FirebaseAppCheck.instance.activate(
+    webProvider: ReCaptchaV3Provider('recaptcha-v3-site-key'),
+    androidProvider: AndroidProvider.debug,
+    appleProvider: AppleProvider.appAttest,
+  );
+
   runApp(MyApp());
 }
 

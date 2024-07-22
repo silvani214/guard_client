@@ -72,6 +72,8 @@ class _ChatScreenState extends State<ChatScreen> {
     } else {
       return;
     }
+    print('----------------------------------------------');
+    print(messageData['timestamp']);
     final message = types.TextMessage(
       author: author,
       createdAt:
@@ -114,7 +116,7 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Chat'),
+        title: Text('Chat - ${widget.guard.email}'),
       ),
       body: Chat(
         messages: _messages,

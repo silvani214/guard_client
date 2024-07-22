@@ -59,4 +59,28 @@ class AuthRepository {
       throw Exception('Failed to login with token');
     }
   }
+
+  Future<UserModel?> getUserDetail(int userId) async {
+    try {
+      final response = await apiClient.get('/clients/$userId');
+      return UserModel.fromJson(response.data);
+    } catch (e) {
+      print(e);
+      return null;
+    }
+  }
+
+  Future<bool> updateUserDetail(UserModel user) async {
+    final response =
+        await apiClient.put('/clients/${user.id}', data: user.toJson());
+    return true;
+    // try {
+    //   final response =
+    //       await apiClient.put('/clients/${user.id}', data: user.toJson());
+    //   return response.statusCode == 200;
+    // } catch (e) {
+    //   print(e);
+    //   return false;
+    // }
+  }
 }

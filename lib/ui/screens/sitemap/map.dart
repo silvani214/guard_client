@@ -42,9 +42,10 @@ class _SiteMapScreenState extends State<SiteMapScreen> {
   Future<void> _signInAndFetchLocation() async {
     try {
       UserCredential userCredential = await _auth.signInWithEmailAndPassword(
-        email: 'client@gmail.com',
+        email: 'client@test.com',
         password: '123456',
       );
+      print(userCredential);
       if (userCredential.user != null) {
         _signInCompleter.complete();
       }
@@ -96,7 +97,6 @@ class _SiteMapScreenState extends State<SiteMapScreen> {
   }
 
   void _centerMapAndAddHitPoints(SiteListLoaded state) {
-
     var siteList = state.sites;
     LatLngBounds bounds;
 
