@@ -11,6 +11,8 @@ import '../../../utils/util.dart';
 import '../../../models/event_model.dart';
 import '../../../models/site_model.dart';
 import '../../../models/location_model.dart';
+import 'package:get_it/get_it.dart';
+import 'package:guard_client/services/api_client.dart';
 
 class DashboardScreen extends StatefulWidget {
   @override
@@ -19,19 +21,15 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState extends State<DashboardScreen> {
   late Timer _timer;
+  late ApiClient _apiClient;
+  late List<SiteModel> _sites = [];
+  late List<EventModel> _events = [];
 
   @override
   void initState() {
     super.initState();
-    context.read<SiteBloc>().add(FetchSites());
-    context.read<EventBloc>().add(FetchEvents(id: 352));
-    _startTimer();
-  }
-
-  void _startTimer() {
-    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
-      setState(() {});
-    });
+    _apiClient = GetIt.instance<ApiClient>();
+    _fetchData();
   }
 
   @override
@@ -61,6 +59,22 @@ class _DashboardScreenState extends State<DashboardScreen> {
       return '${description.substring(0, maxLength)}...';
     }
     return description;
+  }
+
+  Future<void> _fetchData() async {
+    try {
+      final response = await _apiClient.get('/clients/dashboard');
+      _sites = (response.data['data']["siteList"] as List)
+          .map((site) => SiteModel.fromJson(site['site']))
+          .toList();
+      _events = (response.data['data']["eventList"] as List)
+          .map((event) => EventModel.fromJson(event))
+          .toList();
+      setState(() {});
+      print(_sites);
+    } catch (e) {
+      throw Exception('Failed to fetch dashboard data');
+    }
   }
 
   IconData _getIconDataForAction(String action) {
@@ -244,74 +258,55 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     ),
                   ),
                   SizedBox(height: 16),
-                  BlocBuilder<SiteBloc, SiteState>(
-                    builder: (context, state) {
-                      if (state is SiteLoading) {
-                        return Center(
-                          child: CircularProgressIndicator(
-                            color: Theme.of(context).primaryColor,
-                          ),
-                        );
-                      } else if (state is SiteError) {
-                        return Center(child: Text('Failed to load sites'));
-                      } else if (state is SiteListLoaded) {
-                        return Container(
-                          height: 150, // Adjust as needed
-                          child: ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            itemCount: state.sites.length,
-                            itemBuilder: (context, index) {
-                              final site = state.sites[index];
-                              return GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          SiteDetailScreen(site: site),
-                                    ),
-                                  );
-                                },
-                                child: Container(
-                                  width: 100, // Adjust as needed
-                                  margin: EdgeInsets.only(right: 16),
-                                  child: Column(
-                                    children: [
-                                      PlaceholderImage(), // Use the PlaceholderImage widget here
-                                      SizedBox(height: 8),
-                                      Container(
-                                        width:
-                                            100, // Set the width to be the same as the image
-                                        child: site.name.length > 10
-                                            ? Marquee(
-                                                text: site.name,
-                                                style: TextStyle(fontSize: 14),
-                                              )
-                                            : Center(
-                                                child: Text(
-                                                  site.name,
-                                                  style:
-                                                      TextStyle(fontSize: 14),
-                                                ),
-                                              ),
-                                      ),
-                                    ],
-                                  ),
+                  SizedBox(
+                      height: 150,
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: _sites.length,
+                        itemBuilder: (context, index) {
+                          final site = _sites[index];
+                          return GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      SiteDetailScreen(site: site),
                                 ),
                               );
                             },
-                          ),
-                        );
-                      } else {
-                        return Center(child: Text('No sites available'));
-                      }
-                    },
-                  ),
+                            child: Container(
+                              width: 100, // Adjust as needed
+                              margin: EdgeInsets.only(right: 16),
+                              child: Column(
+                                children: [
+                                  PlaceholderImage(), // Use the PlaceholderImage widget here
+                                  SizedBox(height: 8),
+                                  Container(
+                                    width:
+                                        100, // Set the width to be the same as the image
+                                    child: site.name.length > 10
+                                        ? Marquee(
+                                            text: site.name,
+                                            style: TextStyle(fontSize: 14),
+                                          )
+                                        : Center(
+                                            child: Text(
+                                              site.name,
+                                              style: TextStyle(fontSize: 14),
+                                            ),
+                                          ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      )),
                 ],
               ),
             ),
             SizedBox(height: 16),
-            // Events Section
             Expanded(
               child: Container(
                 decoration: BoxDecoration(
@@ -332,93 +327,69 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     ),
                     SizedBox(height: 16),
                     Expanded(
-                      child: BlocBuilder<EventBloc, EventState>(
-                        builder: (context, eventState) {
-                          if (eventState is EventLoading) {
-                            return Center(
-                              child: CircularProgressIndicator(
-                                color: Theme.of(context).primaryColor,
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: _events.length,
+                        itemBuilder: (context, index) {
+                          final event = _events[index];
+                          final formattedDate =
+                              DateFormat('yyyy-MM-dd').format(event.timestamp);
+                          final iconData = _getIconDataForAction(event.action);
+                          final iconColor = _getColorForAction(event.action);
+                          return Container(
+                            decoration: BoxDecoration(
+                              border: Border(
+                                bottom: BorderSide(
+                                  width: 0.5,
+                                  color: Color.fromARGB(100, 200, 200, 200),
+                                ),
                               ),
-                            );
-                          } else if (eventState is EventError) {
-                            return Center(child: Text('Failed to load events'));
-                          } else if (eventState is EventListLoaded) {
-                            return Scrollbar(
-                              child: ListView.builder(
-                                shrinkWrap: true,
-                                itemCount: eventState.events.length,
-                                itemBuilder: (context, index) {
-                                  final event = eventState.events[index];
-                                  final formattedDate = DateFormat('yyyy-MM-dd')
-                                      .format(event.timestamp);
-                                  final iconData =
-                                      _getIconDataForAction(event.action);
-                                  final iconColor =
-                                      _getColorForAction(event.action);
-                                  return Container(
-                                    decoration: BoxDecoration(
-                                      border: Border(
-                                        bottom: BorderSide(
-                                          width: 0.5,
-                                          color: Color.fromARGB(
-                                              100, 200, 200, 200),
-                                        ),
-                                      ),
+                            ),
+                            child: ListTile(
+                              leading: Icon(iconData,
+                                  color:
+                                      iconColor), // Add the initials icon here
+                              title: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Expanded(
+                                    child: Text(event.description),
+                                  ),
+                                  Text(
+                                    formattedDate,
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey,
                                     ),
-                                    child: ListTile(
-                                      leading: Icon(iconData,
-                                          color:
-                                              iconColor), // Add the initials icon here
-                                      title: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Expanded(
-                                            child: Text(event.description),
-                                          ),
-                                          Text(
-                                            formattedDate,
-                                            style: TextStyle(
-                                              fontSize: 12,
-                                              color: Colors.grey,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      subtitle:
-                                          BlocBuilder<SiteBloc, SiteState>(
-                                        builder: (context, siteState) {
-                                          if (siteState is SiteListLoaded) {
-                                            final siteName = siteState.sites
-                                                .firstWhere(
-                                                    (site) =>
-                                                        site.id == event.siteId,
-                                                    orElse: () => SiteModel(
-                                                        id: 0,
-                                                        name: 'Unknown Site',
-                                                        description: '',
-                                                        location: LocationModel(
-                                                            latitude: 0.0,
-                                                            longitude: 0.0)))
-                                                .name;
-                                            return Text(siteName,
-                                                style: TextStyle(
-                                                    color: Colors.grey));
-                                          }
-                                          return SizedBox.shrink();
-                                        },
-                                      ),
-                                      onTap: () {
-                                        // Navigate to event details if needed
-                                      },
-                                    ),
-                                  );
+                                  ),
+                                ],
+                              ),
+                              subtitle: BlocBuilder<SiteBloc, SiteState>(
+                                builder: (context, siteState) {
+                                  if (siteState is SiteListLoaded) {
+                                    final siteName = siteState.sites
+                                        .firstWhere(
+                                            (site) => site.id == event.siteId,
+                                            orElse: () => SiteModel(
+                                                id: 0,
+                                                name: 'Unknown Site',
+                                                description: '',
+                                                location: LocationModel(
+                                                    latitude: 0.0,
+                                                    longitude: 0.0)))
+                                        .name;
+                                    return Text(siteName,
+                                        style: TextStyle(color: Colors.grey));
+                                  }
+                                  return SizedBox.shrink();
                                 },
                               ),
-                            );
-                          } else {
-                            return Center(child: Text('No events available'));
-                          }
+                              onTap: () {
+                                // Navigate to event details if needed
+                              },
+                            ),
+                          );
                         },
                       ),
                     ),

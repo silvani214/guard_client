@@ -44,14 +44,14 @@ class PhotoViewDetailScreen extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    'Site Name: ${photo.site.name}',
+                    'Site Name: ${photo.site?.name}',
                     style: TextStyle(
                       fontSize: 12,
                       color: Colors.white,
                     ),
                   ),
                   Text(
-                    'Site Address: ${photo.site.address}',
+                    'Site Address: ${photo.site?.address}',
                     style: TextStyle(
                       fontSize: 12,
                       color: Colors.white,
@@ -59,6 +59,13 @@ class PhotoViewDetailScreen extends StatelessWidget {
                   ),
                   Text(
                     'Guard Name: ${photo.guard.firstname} ${photo.guard.lastname}',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.white,
+                    ),
+                  ),
+                  Text(
+                    'Title: ${photo.title}',
                     style: TextStyle(
                       fontSize: 12,
                       color: Colors.white,

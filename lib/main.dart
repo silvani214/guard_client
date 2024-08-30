@@ -35,6 +35,7 @@ import 'utils/app_theme.dart';
 import 'utils/route_observer.dart';
 import 'ui/screens/splash/splash_screen.dart';
 import './auth_handler.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 final Logger logger = Logger();
 
@@ -48,6 +49,49 @@ void main() async {
     androidProvider: AndroidProvider.debug,
     appleProvider: AppleProvider.appAttest,
   );
+
+  FirebaseMessaging messaging = FirebaseMessaging.instance;
+  NotificationSettings settings = await messaging.requestPermission(
+    alert: true,
+    announcement: false,
+    badge: true,
+    carPlay: false,
+    criticalAlert: false,
+    provisional: false,
+    sound: true,
+  );
+
+  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    print('Got a message whilst in the foreground!');
+    print('Message data: ${message.data}');
+
+    if (message.notification != null) {
+      print('Message also contained a notification: ${message.notification}');
+
+      if (message.data.containsKey('siteId')) {
+        int siteId = int.parse(message.data['siteId']);
+        navigatorKey.currentState?.pushNamed(
+          '/event',
+          arguments: {'siteId': siteId},
+        );
+      }
+    }
+  });
+
+  FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+    print('A new onMessageOpenedApp event was published!');
+    // Handle message tap here
+    if (message.data.containsKey('siteId')) {
+      int siteId = int.parse(message.data['siteId']);
+      navigatorKey.currentState?.pushNamed(
+        '/event',
+        arguments: {'siteId': siteId},
+      );
+    }
+  });
+
+  String? token = await messaging.getToken();
+  print("******************************************** Device Token: $token");
 
   runApp(MyApp());
 }
@@ -94,6 +138,8 @@ void setup() {
       ScheduleRepository(apiClient: getIt<ApiClient>()));
 }
 
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -122,6 +168,21 @@ class MyApp extends StatelessWidget {
         theme: AppThemeData.defaultTheme,
         navigatorObservers: <NavigatorObserver>[routeObserver],
         home: AuthHandler(),
+        navigatorKey: navigatorKey,
+        onGenerateRoute: (settings) {
+          print('event event event');
+
+          if (settings.name == '/event') {
+            final args = settings.arguments as Map<String, dynamic>;
+            return MaterialPageRoute(
+              builder: (context) {
+                return EventScreen(siteId: args['siteId']);
+              },
+            );
+          }
+          // Handle other routes if necessary
+          return null;
+        },
         routes: {
           '/login': (context) => LoginScreen(),
           '/signup': (context) => SignUpScreen(),

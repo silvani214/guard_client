@@ -11,6 +11,7 @@ class ScheduleRepository {
   }) async {
     try {
       final response = await apiClient.get('/schedule/?siteId=$siteId');
+      print(response.data['data']);
 
       List<ScheduleModel> schedules = (response.data['data'] as List)
           .map((schedule) => ScheduleModel.fromJson(schedule))

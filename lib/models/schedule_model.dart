@@ -4,7 +4,7 @@ class ScheduleModel {
   final DateTime startDate;
   final DateTime endDate;
   final int guardId;
-  final int hours;
+  final double hours;
   final double frequency;
   String announces;
 

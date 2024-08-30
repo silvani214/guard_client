@@ -15,14 +15,15 @@ class VisitorRepository {
     try {
       final startDateStr =
           startDate != null ? Utils.formatDateToString(startDate) : null;
-      final endDateStr =
-          endDate != null ? Utils.formatDateToString(endDate) : null;
+      final endDateStr = endDate != null
+          ? Utils.formatDateToString(endDate.add(const Duration(days: 1)))
+          : null;
 
       final response = (startDateStr != null && endDateStr != null)
           ? await apiClient.get(
-              '/sites/visitors/$siteId?pageNum=${(pageNum! / 10).floor()}&pageSize=10&startDate=$startDateStr&endDate=$endDateStr')
+              '/sites/visitors?siteId=$siteId&pageNum=${(pageNum! / 10).floor()}&pageSize=10&startDate=$startDateStr&endDate=$endDateStr')
           : await apiClient.get(
-              '/sites/visitors/$siteId?pageNum=${(pageNum! / 10).floor()}&pageSize=10');
+              '/sites/visitor?siteId=$siteId&pageNum=${(pageNum! / 10).floor()}&pageSize=10');
 
       print(response.data['data']);
 
@@ -39,7 +40,7 @@ class VisitorRepository {
 
   Future<VisitorModel> getVisitor(int id) async {
     try {
-      final response = await apiClient.get('/visitors/$id');
+      final response = await apiClient.get('/sites/visitor/$id');
       VisitorModel visitor = VisitorModel.fromJson(response.data['data']);
       return visitor;
     } catch (e) {

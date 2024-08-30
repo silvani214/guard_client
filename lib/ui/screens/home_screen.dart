@@ -1,11 +1,14 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:awesome_bottom_bar/awesome_bottom_bar.dart';
+import 'package:guard_client/repositories/auth_repository.dart';
 import 'package:guard_client/ui/screens/event/event_screen.dart';
 import 'package:guard_client/ui/screens/profile/profile_screen.dart';
 import 'package:guard_client/ui/screens/report/report_screen.dart';
 import 'package:guard_client/ui/screens/sitemap/map.dart';
 import './chat/chat_room.dart';
 import 'package:guard_client/ui/screens/dashboard/dashboard_screen.dart';
+import 'package:get_it/get_it.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -35,14 +38,30 @@ const List<TabItem> items = [
   // ),
 ];
 
+final getIt = GetIt.instance;
+
 class _HomeScreenState extends State<HomeScreen> {
+  var authRepo = getIt<AuthRepository>();
+
   int _selectedIndex = 0;
+
   final List<Widget> _screens = [
     DashboardScreen(),
     SiteMapScreen(),
     ChatRoom(),
     ProfileScreen(),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    saveToken();
+  }
+
+  void saveToken() async {
+    var token = await FirebaseMessaging.instance.getToken();
+    authRepo.saveToken(token ?? "");
+  }
 
   void _onItemTapped(int index) {
     setState(() {

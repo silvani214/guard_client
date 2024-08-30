@@ -15,8 +15,9 @@ class EventRepository {
     try {
       final startDateStr =
           startDate != null ? Utils.formatDateToString(startDate) : null;
-      final endDateStr =
-          endDate != null ? Utils.formatDateToString(endDate) : null;
+      final endDateStr = endDate != null
+          ? Utils.formatDateToString(endDate.add(const Duration(days: 1)))
+          : null;
 
       final response = (startDateStr != null && endDateStr != null)
           ? await apiClient.get(

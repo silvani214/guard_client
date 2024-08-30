@@ -14,19 +14,23 @@ class PhotoRepository {
     try {
       final startDateStr =
           startDate != null ? Utils.formatDateToString(startDate) : null;
-      final endDateStr =
-          endDate != null ? Utils.formatDateToString(endDate) : null;
+      final endDateStr = endDate != null
+          ? Utils.formatDateToString(endDate.add(const Duration(days: 1)))
+          : null;
       final response = (startDateStr != null && endDateStr != null)
           ? await apiClient.get(
-              '/sites/photos/$siteId?pageNum=$pageNum&pageSize=10&startDate=$startDateStr&endDate=$endDateStr')
+              '/sites/images/$siteId?pageNum=$pageNum&pageSize=10&startDate=$startDateStr&endDate=$endDateStr')
           : await apiClient
-              .get('/sites/photos/$siteId?pageNum=$pageNum&pageSize=10');
+              .get('/sites/images/$siteId?pageNum=$pageNum&pageSize=10');
 
+      print('photo list');
       print(response);
 
-      List<PhotoModel> photos = (response.data['data'] as List)
-          .map((photo) => PhotoModel.fromJson(photo['photo']))
-          .toList();
+      List<PhotoModel> photos = !(response.data.isEmpty)
+          ? (response.data as List)
+              .map((photo) => PhotoModel.fromJson(photo))
+              .toList()
+          : [];
       return photos;
     } catch (e) {
       print(e);
@@ -36,7 +40,7 @@ class PhotoRepository {
 
   Future<PhotoModel> getPhoto(int id) async {
     try {
-      final response = await apiClient.get('/photos/$id');
+      final response = await apiClient.get('/sites/image/$id');
       PhotoModel photo = PhotoModel.fromJson(response.data['data']);
       return photo;
     } catch (e) {

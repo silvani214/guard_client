@@ -16,13 +16,14 @@ class ReportRepository {
     try {
       final startDateStr =
           startDate != null ? Utils.formatDateToString(startDate) : null;
-      final endDateStr =
-          endDate != null ? Utils.formatDateToString(endDate) : null;
+      final endDateStr = endDate != null
+          ? Utils.formatDateToString(endDate.add(const Duration(days: 1)))
+          : null;
       print(
-          '/sites/reports/$id?pageNum=${(pageNum! / 10).floor()}&pageSize=10&startDate=$startDateStr&endDate=$endDateStr');
+          '/sites/reports?siteId=$id&pageNum=${(pageNum! / 10).floor()}&pageSize=10&startDate=$startDateStr&endDate=$endDateStr');
       final response = (startDateStr != null && endDateStr != null)
           ? await apiClient.get(
-              '/sites/reports/$id?pageNum=${(pageNum! / 10).floor()}&pageSize=10&startDate=$startDateStr&endDate=$endDateStr')
+              '/sites/reports?siteId=$id&pageNum=${(pageNum! / 10).floor()}&pageSize=10&startDate=$startDateStr&endDate=$endDateStr')
           : await apiClient.get('/sites/reports$id?pageNum=0&pageSize=10');
       print(response.data);
       List<ReportModel> Reports = (response.data['data'] as List)
@@ -37,7 +38,7 @@ class ReportRepository {
 
   Future<ReportModel> getReport(int id) async {
     try {
-      final response = await apiClient.get('/Reports/$id');
+      final response = await apiClient.get('/sites/reports/$id');
       ReportModel Report = ReportModel.fromJson(response.data['data']);
       return Report;
     } catch (e) {

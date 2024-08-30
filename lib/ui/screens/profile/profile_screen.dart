@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:guard_client/repositories/auth_repository.dart';
-import '../../../models/user_model.dart';
 import 'package:guard_client/services/auth_service.dart';
+import 'package:http/http.dart' as http;
+import '../../../models/user_model.dart';
+import 'package:guard_client/services/api_client.dart';
 
 class ProfileScreen extends StatefulWidget {
   @override
@@ -12,12 +14,15 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   late Future<UserModel?> userFuture;
   final getIt = GetIt.instance;
+  late ApiClient _apiClient;
+
   UserModel? user;
 
   @override
   void initState() {
     super.initState();
-    userFuture = getIt<AuthService>().getUserDetail(); // Assuming user ID is 1
+    userFuture = getIt<AuthService>().getUserDetail();
+    _apiClient = getIt<ApiClient>();
     userFuture.then((userData) {
       setState(() {
         user = userData;
@@ -108,28 +113,122 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
+  Future<void> _openReportBugDialog() async {
+    final TextEditingController controller = TextEditingController();
+
+    final bugReport = await showDialog<String>(
+      context: context,
+      builder: (context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Container(
+            padding: EdgeInsets.all(16),
+            width: 300,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Report Bug',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(height: 10),
+                TextField(
+                  controller: controller,
+                  decoration: InputDecoration(
+                    labelText: 'Describe the bug',
+                  ),
+                  maxLines: 5,
+                ),
+                SizedBox(height: 20),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).pop(controller.text);
+                    },
+                    child: Text('Submit'),
+                    style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+
+    if (bugReport != null && bugReport.isNotEmpty) {
+      try {
+        await _apiClient.put('/setting/bugs', data: bugReport);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Bug reported successfully')),
+        );
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to report bug')),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color.fromARGB(255, 245, 247, 250),
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(40.0), // Set the custom height
+        preferredSize: Size.fromHeight(40.0),
         child: AppBar(
           surfaceTintColor: Theme.of(context).primaryColor,
           backgroundColor: Color.fromARGB(255, 245, 247, 250),
-          elevation: 0, // Remove shadow
+          elevation: 0,
           title: Padding(
-              padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
-              child: Center(
-                  child: Text(
-                'Profile',
-                style: TextStyle(
-                  color: Theme.of(context).primaryColor,
-                  fontFamily: 'Roboto',
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ))),
+            padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
+            child: Text(
+              'Profile',
+              style: TextStyle(
+                color: Theme.of(context).primaryColor,
+                fontFamily: 'Roboto',
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          actions: [
+            IconButton(
+              icon:
+                  Icon(Icons.more_vert, color: Theme.of(context).primaryColor),
+              onPressed: () {
+                showMenu(
+                  context: context,
+                  position: RelativeRect.fromLTRB(100, 40, 0, 0),
+                  items: [
+                    PopupMenuItem<String>(
+                      value: 'report_bug',
+                      child: Text('Report Bug'),
+                    ),
+                  ],
+                ).then((value) {
+                  if (value == 'report_bug') {
+                    _openReportBugDialog();
+                  }
+                });
+              },
+            ),
+          ],
         ),
       ),
       body: FutureBuilder<UserModel?>(
@@ -199,7 +298,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       label: 'Gender',
                       content: user?.gender ?? 'N/A',
                     ),
-                    // Add more details as needed
                   ],
                 ),
               ),

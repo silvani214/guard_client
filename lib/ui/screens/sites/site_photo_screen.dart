@@ -303,6 +303,14 @@ class _PhotoListScreenState extends State<PhotoListScreen> with RouteAware {
                                               fontWeight: FontWeight.bold,
                                             ),
                                           )),
+                                          Center(
+                                              child: Text(
+                                            '${photo.title}',
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          )),
                                         ],
                                       ),
                                     ),

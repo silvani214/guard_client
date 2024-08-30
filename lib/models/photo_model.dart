@@ -3,20 +3,23 @@ import 'package:equatable/equatable.dart';
 class PhotoModel {
   final String url;
   final DateTime timestamp;
-  final Site site;
+  final Site? site;
   final Guard guard;
+  final String title;
 
   PhotoModel(
       {required this.url,
       required this.timestamp,
       required this.site,
+      required this.title,
       required this.guard});
 
   factory PhotoModel.fromJson(Map<String, dynamic> json) {
     return PhotoModel(
       url: json['url'],
-      site: Site.fromJson(json['site']),
+      site: json['site'] != null ? Site.fromJson(json['site']) : null,
       guard: Guard.fromJson(json['guard']),
+      title: json['title'] ?? "",
       timestamp: DateTime.parse(json['timestamp']),
     );
   }
@@ -24,6 +27,7 @@ class PhotoModel {
   Map<String, dynamic> toJson() {
     return {
       'url': url,
+      'title': title,
       'timestamp': timestamp,
     };
   }

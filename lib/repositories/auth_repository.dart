@@ -9,11 +9,13 @@ class AuthRepository {
 
   Future<UserModel?> login(String email, String password) async {
     try {
+      print('logging in');
       final response = await apiClient.post(AppConstants.loginEndpoint, data: {
         'email': email,
         'password': password,
       });
-
+      print('response');
+      print(response.data);
       if (response.statusCode == 200 && response.data.containsKey('data')) {
         final data = response.data['data'];
         await apiClient.authService.saveAccessToken(data['access_token']);
@@ -82,5 +84,11 @@ class AuthRepository {
     //   print(e);
     //   return false;
     // }
+  }
+
+  Future<bool> saveToken(String token) async {
+    print(token);
+    await apiClient.post('/device/?token=$token');
+    return true;
   }
 }
